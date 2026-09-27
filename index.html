@@ -9,12 +9,12 @@
 
   <style>
     :root {
-      --orange: #f97316;
-      --orange-dark: #ea580c;
+      --orange: #123B70;
+      --orange-dark: #0B2545;
       --ink: #202124;
       --muted: #6b7280;
       --line: #e5e7eb;
-      --soft: #fff7ed;
+      --soft: #EAF2FC;
       --green: #16a34a;
       --radius: 18px;
     }
@@ -105,8 +105,8 @@
       border-radius: 24px;
       color: white;
       background:
-        radial-gradient(circle at 85% 15%, #fb923c 0, transparent 30%),
-        linear-gradient(115deg, #ea580c, #f97316 55%, #fb923c);
+        radial-gradient(circle at 85% 15%, #3B82F6 0, transparent 30%),
+        linear-gradient(115deg, #0B2545, #123B70 55%, #2563EB);
       overflow: hidden;
       position: relative;
     }
@@ -151,7 +151,7 @@
       max-width: 570px;
       font-size: 15px;
       line-height: 1.7;
-      color: #fff7ed;
+      color: #EAF2FC;
     }
 
     .hero-points {
@@ -165,7 +165,7 @@
       font-size: 12px;
       font-weight: 700;
       background: white;
-      color: #9a3412;
+      color: #123B70;
       padding: 9px 12px;
       border-radius: 9px;
     }
@@ -310,15 +310,15 @@
       align-self: flex-start;
       max-width: 100%;
       margin-top: 8px;
-      background: #fff7ed;
-      color: #c2410c;
-      border: 1px solid #fed7aa;
+      background: #EAF2FC;
+      color: #123B70;
+      border: 1px solid #BFDBFE;
       border-radius: 7px;
       padding: 6px 8px;
       font-size: 10px;
       font-weight: 800;
     }
-
+    
     .detail-btn {
       display: flex;
       justify-content: center;
@@ -326,10 +326,10 @@
       width: 100%;
       min-height: 40px;
       margin: 0 0 8px;
-      border: 1px solid #fdba74;
+      border: 1px solid #0B2545;
       border-radius: 10px;
-      background: #fff7ed;
-      color: #c2410c;
+      background: #0B2545;
+      color: #ffffff;
       font-size: 11px;
       font-weight: 900;
       cursor: pointer;
@@ -341,7 +341,7 @@
     }
 
     .detail-btn:hover {
-      background: #ffedd5;
+      background: #123B70;
     }
 
     .detail-btn:active {
@@ -478,7 +478,7 @@
       min-height: 43px;
       border: 0;
       border-radius: 10px;
-      background: var(--orange);
+      background: #ee4d2d;
       color: white;
       font-size: 12px;
       font-weight: 900;
@@ -487,7 +487,7 @@
       transition: .18s;
     }
 
-    .shopee-btn:hover { background: var(--orange-dark); }
+    .shopee-btn:hover { background: #d73211; }
 
     .shopee-btn.disabled {
       background: #d1d5db;
@@ -1022,9 +1022,6 @@
       const label = getField(product, "LABEL");
 
       const imageUrl = getImageUrl(imageName);
-      const shopeeUrl = getShopeeUrl(
-        getField(product, "LINK SHOPEE")
-      );
 
       const card = document.createElement("article");
       card.className = "product-card";
@@ -1088,31 +1085,9 @@
         openProductDetail(product);
       });
 
-      const button = document.createElement("a");
 
-      button.className = "shopee-btn";
-      button.textContent = "LIHAT DI SHOPEE";
 
-      if (shopeeUrl) {
-        button.href = shopeeUrl;
-        button.target = "_blank";
-        button.rel = "noopener noreferrer";
-      } else {
-        button.href = "#";
-        button.classList.add("disabled");
-        button.setAttribute("aria-disabled", "true");
-
-        button.addEventListener("click", function(event) {
-          event.preventDefault();
-
-          alert(
-            "Link Shopee untuk produk ini belum terbaca. " +
-            "Pastikan kolom LINK SHOPEE berisi URL produk yang lengkap."
-          );
-        });
-      }
-
-      info.append(priceLabel, priceEl, detailButton, button);
+      info.append(priceLabel, priceEl, detailButton);
       card.append(imageWrap, info);
 
       return card;
