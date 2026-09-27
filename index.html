@@ -1140,6 +1140,83 @@
 
 
     // ==========================================
+    // ANALITIK WEBSITE
+    // ==========================================
+
+    let currentAnalyticsProduct = null;
+
+    function getVisitorId() {
+      const key = "aliflam_visitor_id";
+      try {
+        let id = localStorage.getItem(key);
+        if (!id) {
+          id = "V" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+          localStorage.setItem(key, id);
+        }
+        return id;
+      } catch (error) {
+        return "V" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      }
+    }
+
+    function getDeviceType() {
+      const ua = navigator.userAgent || "";
+      if (/iPad|Tablet|PlayBook|Silk/i.test(ua)) return "TABLET";
+      if (/Mobi|Android|iPhone|iPod/i.test(ua)) return "HP";
+      return "PC";
+    }
+
+    function getVisitSource() {
+      const referrer = document.referrer;
+      if (!referrer) return "LANGSUNG";
+      try {
+        const host = new URL(referrer).hostname.toLowerCase();
+        if (host.includes("google.")) return "GOOGLE";
+        if (host.includes("facebook.") || host.includes("instagram.")) return "MEDIA SOSIAL";
+        if (host.includes("whatsapp.")) return "WHATSAPP";
+        return host;
+      } catch (error) {
+        return "LAINNYA";
+      }
+    }
+
+    function sendAnalyticsEvent(eventName, product) {
+      try {
+        const params = new URLSearchParams();
+        params.set("action", "log");
+        params.set("event", eventName);
+        params.set("visitorId", getVisitorId());
+        params.set("page", location.pathname || "home");
+        params.set("device", getDeviceType());
+        params.set("source", getVisitSource());
+        if (product) {
+          params.set("category", getField(product, "KATEGORI"));
+          params.set("productId", getField(product, "ID PRODUK"));
+          params.set("productName", getField(product, "JUDUL PRODUK"));
+          params.set("shopeeUrl", getShopeeUrl(getField(product, "LINK SHOPEE")));
+        }
+
+        const callbackName = "aliflamAnalyticsCallback";
+        const oldCallback = window[callbackName];
+        window[callbackName] = function() {
+          window[callbackName] = oldCallback || undefined;
+        };
+        const script = document.createElement("script");
+        script.src = API_URL + "?" + params.toString() + "&callback=" + callbackName;
+        script.async = true;
+        script.onerror = function() { script.remove(); };
+        script.onload = function() { script.remove(); };
+        document.head.appendChild(script);
+      } catch (error) {
+        // Analitik tidak boleh mengganggu fungsi katalog.
+      }
+    }
+
+    // Catat satu event setiap kali halaman katalog dibuka.
+    sendAnalyticsEvent("KUNJUNGAN");
+
+
+    // ==========================================
     // ELEMEN WEBSITE
     // ==========================================
 
@@ -1473,6 +1550,7 @@
     // ==========================================
 
     function openProductDetail(product) {
+      currentAnalyticsProduct = product;
       const modal = document.getElementById("productModal");
       const image = document.getElementById("modalImage");
       const labelWrap = document.getElementById("modalLabel");
@@ -1546,6 +1624,12 @@
 
       document.body.style.overflow = "hidden";
     }
+
+
+    document.getElementById("modalShopee").addEventListener("click", function(event) {
+      if (this.classList.contains("disabled") || !this.href || this.getAttribute("href") === "#") return;
+      sendAnalyticsEvent("KLIK SHOPEE", currentAnalyticsProduct);
+    });
 
 
     function closeProductDetail() {
