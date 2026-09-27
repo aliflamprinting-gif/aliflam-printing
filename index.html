@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#123B70">
-  <title>Aliflam Printing | Desain & Percetakan</title>
+  <title>Aliflam Printing | Katalog Percetakan</title>
   <meta name="description" content="Katalog produk Aliflam Printing. Cetak banner, spanduk, sticker, brosur, dan kebutuhan promosi. Gratis desain dan revisi sampai fix.">
 
   <style>
@@ -655,7 +655,6 @@
     .wa-other-note { margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
     .wa-send {
       width: 100%;
-      margin-top: 14px;
       min-height: 48px;
       display: flex;
       align-items: center;
@@ -919,7 +918,7 @@
         >
         <div>
           <div class="brand-name">ALIFLAM PRINTING</div>
-          <div class="brand-sub">Desain & Percetakan</div>
+          <div class="brand-sub">Percetakan & Promosi</div>
         </div>
       </a>
 
@@ -930,13 +929,14 @@
   <main class="container">
     <section class="hero">
       <div class="hero-content">
-        <span class="hero-tag">SELAMAT DATANG DI WEBSITE KAMI</span>
+        <span class="hero-tag">KATALOG PRODUK ALIFLAM PRINTING</span>
 
-        <h1>CETAK APAPUN<br>Jadi Lebih Menarik!</h1>
+        <h1>Bikin Promosi<br>Jadi Lebih Menarik!</h1>
 
         <p>
-          Mulai dari usaha, branding, acara, komunitas, hingga keperluan pribadi.
-          Temukan berbagai pilihan produk dan konsultasikan kebutuhanmu bersama kami untuk hasil sesuai harapan.
+          Temukan berbagai kebutuhan cetak untuk usaha, acara,
+          dan promosi kamu. Pilih produk, cek harga, lalu pesan
+          langsung melalui Shopee.
         </p>
 
         <div class="hero-points">
@@ -1421,24 +1421,20 @@
       const info = document.createElement("div");
       info.className = "product-info";
 
-      const categoryEl = document.createElement("div");
-      categoryEl.className = "product-category";
-      categoryEl.textContent = category;
-
       const titleEl = document.createElement("h3");
       titleEl.className = "product-title";
       titleEl.textContent = title || "Produk Aliflam Printing";
 
-      if (label) {
-        const labelEl = document.createElement("span");
-
-        labelEl.className = "product-label";
-        labelEl.textContent = label;
-
-        info.append(categoryEl, titleEl, labelEl);
-      } else {
-        info.append(categoryEl, titleEl);
+      // Tampilkan kategori hanya untuk penanda BEST SELLER.
+      if (category.trim().toUpperCase() === "BEST SELLER") {
+        const categoryEl = document.createElement("div");
+        categoryEl.className = "product-category";
+        categoryEl.textContent = category;
+        info.appendChild(categoryEl);
       }
+
+      // Label promosi dan tombol detail dihilangkan agar card lebih ringkas.
+      info.appendChild(titleEl);
 
       const priceLabel = document.createElement("div");
       priceLabel.className = "price-label";
@@ -1448,20 +1444,25 @@
       priceEl.className = "price";
       priceEl.textContent = formatRupiah(price);
 
-      const detailButton = document.createElement("button");
+      info.append(priceLabel, priceEl);
+      card.append(imageWrap, info);
 
-      detailButton.type = "button";
-      detailButton.className = "detail-btn";
-      detailButton.textContent = "LIHAT SELENGKAPNYA";
+      // Seluruh card membuka popup detail produk.
+      card.style.cursor = "pointer";
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("aria-label", "Lihat detail " + (title || "produk Aliflam Printing"));
 
-      detailButton.addEventListener("click", function() {
+      card.addEventListener("click", function() {
         openProductDetail(product);
       });
 
-
-
-      info.append(priceLabel, priceEl, detailButton);
-      card.append(imageWrap, info);
+      card.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openProductDetail(product);
+        }
+      });
 
       return card;
     }
