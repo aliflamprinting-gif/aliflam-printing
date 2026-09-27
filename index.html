@@ -735,6 +735,144 @@
       .product-title { font-size: 12px; }
       .price { font-size: 15px; }
     }
+    /* PUSAT BANTUAN & INFORMASI */
+    .help-entry {
+      display: flex;
+      justify-content: center;
+      padding: 18px 0 0;
+    }
+
+    .help-open {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 11px 17px;
+      border: 1px solid #BFDBFE;
+      border-radius: 11px;
+      background: #EAF2FC;
+      color: #0B2545;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .18s;
+    }
+
+    .help-open:hover { background: #dbeafe; }
+
+    .help-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      background: rgba(15,23,42,.65);
+    }
+
+    .help-modal.open { display: flex; }
+
+    .help-panel {
+      position: relative;
+      width: min(760px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .help-title {
+      margin: 0 45px 6px 0;
+      color: #123B70;
+      font-size: 23px;
+      line-height: 1.3;
+    }
+
+    .help-subtitle {
+      margin: 0 35px 18px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .help-search {
+      width: 100%;
+      min-height: 46px;
+      margin-bottom: 17px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .help-search:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(18,59,112,.12);
+    }
+
+    .help-category {
+      margin: 17px 0 9px;
+      color: #123B70;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .help-item {
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .help-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      background: #fff;
+      color: var(--ink);
+      text-align: left;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .help-question:hover { background: #f8fafc; }
+    .help-chevron { color: #123B70; font-size: 17px; flex: 0 0 auto; }
+
+    .help-answer {
+      padding: 0 14px 15px;
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.75;
+      white-space: pre-line;
+    }
+
+    .help-empty {
+      padding: 25px 14px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 520px) {
+      .help-panel { padding: 19px; max-height: 94vh; }
+      .help-title { font-size: 20px; }
+      .help-open { width: 100%; }
+    }
+
   </style>
 </head>
 
@@ -778,6 +916,13 @@
         </div>
       </div>
     </section>
+
+    <div class="help-entry">
+      <button class="help-open" id="helpOpen" type="button">
+        <span aria-hidden="true">ⓘ</span>
+        <span>PUSAT BANTUAN &amp; INFORMASI</span>
+      </button>
+    </div>
 
     <section class="catalog" id="katalog">
       <div class="catalog-heading">
@@ -875,6 +1020,17 @@
         target="_blank"
         rel="noopener noreferrer"
       >LIHAT DI SHOPEE</a>
+    </div>
+  </div>
+
+  <!-- MODAL PUSAT BANTUAN & INFORMASI -->
+  <div class="help-modal" id="helpModal" aria-hidden="true">
+    <div class="help-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="modal-close" id="helpClose" type="button" aria-label="Tutup">&times;</button>
+      <h2 class="help-title" id="helpTitle">Pusat Bantuan &amp; Informasi</h2>
+      <p class="help-subtitle">Temukan informasi seputar pemesanan dan layanan Aliflam Printing.</p>
+      <input class="help-search" id="helpSearch" type="search" placeholder="Cari pertanyaan atau kata kunci..." autocomplete="off">
+      <div id="helpList"></div>
     </div>
   </div>
 
@@ -1495,6 +1651,113 @@
     // ==========================================
     // JALANKAN WEBSITE
     // ==========================================
+
+    // ==========================================
+    // PUSAT BANTUAN & INFORMASI
+    // ==========================================
+
+    const helpOpen = document.getElementById("helpOpen");
+    const helpModal = document.getElementById("helpModal");
+    const helpClose = document.getElementById("helpClose");
+    const helpSearch = document.getElementById("helpSearch");
+    const helpList = document.getElementById("helpList");
+
+    const helpFaq = [
+      { category: "Tentang & Desain", q: "Apa itu Aliflam Printing?", a: "Aliflam Printing adalah usaha percetakan yang melayani kebutuhan cetak berbagai produk dengan layanan desain gratis untuk semua produk." },
+      { category: "Tentang & Desain", q: "Apakah semua produk gratis desain?", a: "Ya! Semua produk Aliflam Printing mendapatkan layanan gratis desain." },
+      { category: "Tentang & Desain", q: "Apakah bisa revisi desain berkali-kali?", a: "Bisa! Revisi desain gratis tanpa batas sampai kamu menyetujui desain dengan mengatakan “FIX SIAP CETAK” atau memberikan persetujuan untuk dicetak. Setelah pesanan masuk proses cetak, revisi tidak bisa dilakukan lagi." },
+      { category: "Pemesanan & Pembayaran", q: "Apa perbedaan order di Shopee, WhatsApp, dan website?", a: "Shopee: Harga produk sekitar 20–25% lebih tinggi untuk menyesuaikan biaya aplikasi Shopee. Kamu bisa mendapatkan voucher diskon atau gratis ongkir jika akunmu memenuhi syarat dan voucher tersedia.\n\nWhatsApp: Harga lebih murah dibandingkan Shopee, tetapi ongkir ditanggung pembeli.\n\nWebsite: Harga dan metode pemesanan hampir sama dengan WhatsApp, dengan ongkir ditanggung pembeli. Pemesanan melalui website masih dalam tahap pengembangan." },
+      { category: "Pemesanan & Pembayaran", q: "Bagaimana cara memesan di Aliflam Printing?", a: "1. Pilih produk yang ingin dicetak.\n2. Tentukan ukuran.\n3. Tentukan jumlah pesanan.\n4. Informasikan apakah sudah memiliki desain atau membutuhkan desain dari kami.\n5. Pilih metode pemesanan melalui Shopee, WhatsApp, atau website.\n\nSaat ini website masih dalam tahap pengembangan." },
+      { category: "Pemesanan & Pembayaran", q: "Bagaimana prosedur pesanan melalui WhatsApp atau website?", a: "Pemesanan melalui WhatsApp dan website memiliki alur yang sama. Pembayaran harus lunas terlebih dahulu melalui QRIS sesuai total harga pesanan sebelum diproses. Setelah pembayaran dikonfirmasi, pesanan dilanjutkan ke proses berikutnya. Biaya pengiriman kemudian dihitung dan dikonfirmasi kembali kepada pembeli. Jika ingin mengetahui estimasi ongkir lebih awal, kamu bisa menanyakannya kepada admin." },
+      { category: "Produksi & Pengiriman", q: "Berapa lama proses pengerjaan?", a: "Waktu pengerjaan tergantung antrean, jenis pesanan, jumlah pesanan, dan kondisi operasional. Silakan konfirmasi estimasi kepada admin." },
+      { category: "Produksi & Pengiriman", q: "Apakah tersedia layanan ekspres?", a: "Bisa, tergantung antrean dan kondisi operasional. Layanan ekspres dikenakan biaya khusus sesuai jenis pesanan dan kondisi produksi." },
+      { category: "Produksi & Pengiriman", q: "Apakah bisa 1 hari jadi?", a: "Bisa! Dengan ketentuan file sudah siap cetak maksimal pukul 12.00 WIB dan pemesanan dilakukan melalui WhatsApp. Pengiriman dari kami dapat menggunakan Lalamove. Ongkir bisa dibayar sekaligus dengan pesanan atau secara tunai langsung kepada driver. Pastikan ketersediaan layanan dan estimasi pengerjaan dikonfirmasi kepada admin." },
+      { category: "Produk & Hasil Cetak", q: "Apakah bisa cetak menggunakan desain sendiri?", a: "Bisa! Kamu dapat mengirimkan file desain sendiri kepada admin untuk diperiksa sebelum proses cetak." },
+      { category: "Produk & Hasil Cetak", q: "Apakah ukuran dan bahan bisa disesuaikan?", a: "Kamu bisa menanyakan pilihan ukuran dan bahan yang tersedia kepada admin. Untuk kebutuhan khusus, silakan konsultasikan terlebih dahulu sebelum memesan." },
+      { category: "Produk & Hasil Cetak", q: "Bagaimana jika hasil cetak berbeda dari desain yang disetujui?", a: "Aliflam Printing melakukan konfirmasi desain terlebih dahulu sebelum proses cetak. Pesanan hanya akan dicetak setelah pembeli menyetujui desain atau menyatakan “FIX SIAP CETAK”. Karena itu, pembeli diharapkan memeriksa desain dengan teliti sebelum memberikan persetujuan." },
+      { category: "Pembatalan & Kontak", q: "Apakah pesanan bisa dibatalkan setelah pembayaran?", a: "Pembatalan tidak dapat dilakukan apabila:\n1. Materi pesanan sudah disiapkan.\n2. Desain sedang atau sudah diproses.\n3. Pesanan sudah siap cetak atau sedang dalam proses cetak.\n\nPembatalan hanya dapat dipertimbangkan dalam keadaan mendesak. Jika pembatalan disetujui, pengembalian dana sepenuhnya akan diproses dengan estimasi maksimal 3 hari kerja." },
+      { category: "Pembatalan & Kontak", q: "Bagaimana cara menghubungi admin?", a: "Kamu bisa menghubungi admin Aliflam Printing melalui WhatsApp atau fitur komunikasi yang tersedia di toko Shopee kami." }
+    ];
+
+    function renderHelpFaq() {
+      const keyword = helpSearch.value.trim().toLowerCase();
+      const filtered = helpFaq.filter(function(item) {
+        return (item.q + " " + item.a + " " + item.category).toLowerCase().includes(keyword);
+      });
+      helpList.innerHTML = "";
+
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "help-empty";
+        empty.textContent = "Informasi tidak ditemukan. Coba kata kunci lain.";
+        helpList.appendChild(empty);
+        return;
+      }
+
+      const categories = [...new Set(filtered.map(function(item) { return item.category; }))];
+      categories.forEach(function(category) {
+        const heading = document.createElement("h3");
+        heading.className = "help-category";
+        heading.textContent = category;
+        helpList.appendChild(heading);
+
+        filtered.filter(function(item) { return item.category === category; }).forEach(function(item) {
+          const wrapper = document.createElement("div");
+          wrapper.className = "help-item";
+
+          const question = document.createElement("button");
+          question.className = "help-question";
+          question.type = "button";
+          question.setAttribute("aria-expanded", "false");
+
+          const label = document.createElement("span");
+          label.textContent = item.q;
+          const chevron = document.createElement("span");
+          chevron.className = "help-chevron";
+          chevron.textContent = "+";
+          question.append(label, chevron);
+
+          const answer = document.createElement("div");
+          answer.className = "help-answer";
+          answer.textContent = item.a;
+          answer.hidden = true;
+
+          question.addEventListener("click", function() {
+            const isOpen = question.getAttribute("aria-expanded") === "true";
+            question.setAttribute("aria-expanded", String(!isOpen));
+            answer.hidden = isOpen;
+            chevron.textContent = isOpen ? "+" : "−";
+          });
+
+          wrapper.append(question, answer);
+          helpList.appendChild(wrapper);
+        });
+      });
+    }
+
+    function openHelpModal() {
+      helpModal.classList.add("open");
+      helpModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      renderHelpFaq();
+      helpSearch.focus();
+    }
+
+    function closeHelpModal() {
+      helpModal.classList.remove("open");
+      helpModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    helpOpen.addEventListener("click", openHelpModal);
+    helpClose.addEventListener("click", closeHelpModal);
+    helpModal.addEventListener("click", function(event) {
+      if (event.target === helpModal) closeHelpModal();
+    });
+    helpSearch.addEventListener("input", renderHelpFaq);
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape" && helpModal.classList.contains("open")) closeHelpModal();
+    });
 
     loadProducts();
   </script>
