@@ -578,6 +578,113 @@
       font-size: 19px;
     }
 
+        /* MODAL KONSULTASI WHATSAPP */
+    .consult-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 110;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(15,23,42,.65);
+    }
+
+    .consult-modal.open { display: flex; }
+
+    .consult-panel {
+      position: relative;
+      width: min(480px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .consult-step {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .consult-title {
+      margin: 0 42px 18px 0;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+    .consult-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .consult-option {
+      min-height: 48px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .consult-option.selected {
+      border: 2px solid var(--orange);
+      background: var(--soft);
+      color: var(--orange-dark);
+    }
+
+    .consult-next,
+    .consult-wa {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--orange);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .consult-next:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+    }
+
+    .consult-wa { background: #16a34a; }
+
+    .consult-other {
+      margin-top: 14px;
+    }
+
+    .consult-other input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .consult-note {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 420px) {
+      .consult-options { grid-template-columns: 1fr; }
+      .consult-panel { padding: 19px; }
+    }
+
     @media (max-width: 1000px) {
       .product-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -786,12 +893,74 @@
     </div>
   </div>
 
+  <!-- MODAL KONSULTASI WHATSAPP -->
+  <div class="consult-modal" id="consultModal" aria-hidden="true">
+    <div
+      class="consult-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consultTitle"
+    >
+      <button
+        class="modal-close"
+        id="consultClose"
+        type="button"
+        aria-label="Tutup"
+      >&times;</button>
+
+      <div id="consultStepOne">
+        <div class="consult-step">LANGKAH 1 DARI 2</div>
+        <h2 class="consult-title" id="consultTitle">Mau cetak apa?</h2>
+
+        <div class="consult-options" id="productOptions">
+          <button class="consult-option" type="button">BANNER SPANDUK</button>
+          <button class="consult-option" type="button">X-BANNER</button>
+          <button class="consult-option" type="button">STANDING KAYU</button>
+          <button class="consult-option" type="button">TAPLAK MEJA</button>
+          <button class="consult-option" type="button">STICKER</button>
+          <button class="consult-option" type="button">MENU/POSTER</button>
+          <button class="consult-option" type="button">BROSUR/FLYER</button>
+          <button class="consult-option" type="button">ANEKA KARTU</button>
+          <button class="consult-option" type="button">LAINNYA</button>
+        </div>
+
+        <div class="consult-other" id="consultOther" hidden>
+          <input
+            id="consultOtherInput"
+            type="text"
+            placeholder="Mau tanya apa?"
+          >
+          <div class="consult-note">Opsional</div>
+        </div>
+
+        <button class="consult-next" id="consultNext" type="button" disabled>
+          LANJUT
+        </button>
+      </div>
+
+      <div id="consultStepTwo" hidden>
+        <div class="consult-step">LANGKAH 2 DARI 2</div>
+        <h2 class="consult-title">Pilih kondisi</h2>
+
+        <div class="consult-options" id="conditionOptions">
+          <button class="consult-option" type="button">Sudah punya desain</button>
+          <button class="consult-option" type="button">Punya desain, perlu revisi</button>
+          <button class="consult-option" type="button">Belum punya desain</button>
+          <button class="consult-option" type="button">Baru buka usaha/toko</button>
+        </div>
+
+        <button class="consult-wa" id="consultSend" type="button" disabled>
+          HUBUNGI WHATSAPP
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOMBOL WHATSAPP -->
   <a
     class="wa-float"
     id="waButton"
     href="#"
-    target="_blank"
     rel="noopener"
   >
     <span class="wa-icon">☏</span>
@@ -1251,22 +1420,126 @@
       }
     });
 
-
     // ==========================================
     // TOMBOL WHATSAPP
     // ==========================================
 
     const waButton = document.getElementById("waButton");
+    const consultModal = document.getElementById("consultModal");
+    const consultClose = document.getElementById("consultClose");
+    const consultStepOne = document.getElementById("consultStepOne");
+    const consultStepTwo = document.getElementById("consultStepTwo");
+    const productOptions = document.getElementById("productOptions");
+    const conditionOptions = document.getElementById("conditionOptions");
+    const consultNext = document.getElementById("consultNext");
+    const consultSend = document.getElementById("consultSend");
+    const consultOther = document.getElementById("consultOther");
+    const consultOtherInput = document.getElementById("consultOtherInput");
 
-    const waMessage = encodeURIComponent(
-      "Halo Aliflam Printing, saya mau tanya tentang produk percetakan."
-    );
+    let selectedConsultProduct = "";
+    let selectedConsultCondition = "";
 
-    waButton.href =
-      "https://wa.me/" +
-      WHATSAPP_NUMBER +
-      "?text=" +
-      waMessage;
+    waButton.addEventListener("click", function(event) {
+      event.preventDefault();
+
+      selectedConsultProduct = "";
+      selectedConsultCondition = "";
+      consultStepOne.hidden = false;
+      consultStepTwo.hidden = true;
+      consultNext.disabled = true;
+      consultSend.disabled = true;
+      consultOther.hidden = true;
+      consultOtherInput.value = "";
+
+      productOptions.querySelectorAll(".consult-option").forEach(function(button) {
+        button.classList.remove("selected");
+      });
+
+      conditionOptions.querySelectorAll(".consult-option").forEach(function(button) {
+        button.classList.remove("selected");
+      });
+
+      consultModal.classList.add("open");
+      consultModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    });
+
+    productOptions.addEventListener("click", function(event) {
+      const button = event.target.closest(".consult-option");
+
+      if (!button) return;
+
+      productOptions.querySelectorAll(".consult-option").forEach(function(item) {
+        item.classList.toggle("selected", item === button);
+      });
+
+      selectedConsultProduct = button.textContent.trim();
+      consultNext.disabled = false;
+      consultOther.hidden = selectedConsultProduct !== "LAINNYA";
+    });
+
+    consultNext.addEventListener("click", function() {
+      if (!selectedConsultProduct) return;
+
+      consultStepOne.hidden = true;
+      consultStepTwo.hidden = false;
+    });
+
+    conditionOptions.addEventListener("click", function(event) {
+      const button = event.target.closest(".consult-option");
+
+      if (!button) return;
+
+      conditionOptions.querySelectorAll(".consult-option").forEach(function(item) {
+        item.classList.toggle("selected", item === button);
+      });
+
+      selectedConsultCondition = button.textContent.trim();
+      consultSend.disabled = false;
+    });
+
+    consultSend.addEventListener("click", function() {
+      if (!selectedConsultProduct || !selectedConsultCondition) return;
+
+      const otherText = consultOtherInput.value.trim();
+
+      let message =
+        "Halo Aliflam Printing, saya mau tanya tentang " +
+        selectedConsultProduct + ".\n" +
+        "Kondisi: " + selectedConsultCondition + ".";
+
+      if (selectedConsultProduct === "LAINNYA" && otherText) {
+        message += "\nPertanyaan: " + otherText;
+      }
+
+      const waUrl =
+        "https://wa.me/" +
+        WHATSAPP_NUMBER +
+        "?text=" +
+        encodeURIComponent(message);
+
+      window.open(waUrl, "_blank", "noopener");
+    });
+
+    function closeConsultModal() {
+      consultModal.classList.remove("open");
+      consultModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    consultClose.addEventListener("click", closeConsultModal);
+
+    consultModal.addEventListener("click", function(event) {
+      if (event.target === consultModal) {
+        closeConsultModal();
+      }
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape" && consultModal.classList.contains("open")) {
+        closeConsultModal();
+      }
+    });
 
 
     // ==========================================
