@@ -1,1 +1,931 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f97316">
+  <title>Aliflam Printing | Katalog Percetakan</title>
+  <meta name="description" content="Katalog produk Aliflam Printing. Cetak banner, spanduk, sticker, brosur, dan kebutuhan promosi. Gratis desain dan revisi sampai fix.">
+
+  <style>
+    :root {
+      --orange: #f97316;
+      --orange-dark: #ea580c;
+      --ink: #202124;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --soft: #fff7ed;
+      --green: #16a34a;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: #f8fafc;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .container {
+      width: min(1180px, calc(100% - 36px));
+      margin: auto;
+    }
+
+    /* HEADER */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .nav-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* HERO */
+    .hero {
+      margin-top: 22px;
+      padding: 38px 34px;
+      border-radius: 24px;
+      color: white;
+      background:
+        radial-gradient(circle at 85% 15%, #fb923c 0, transparent 30%),
+        linear-gradient(115deg, #ea580c, #f97316 55%, #fb923c);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border: 35px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+      right: -65px;
+      bottom: -145px;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.3);
+      padding: 7px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(29px, 5vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -.8px;
+    }
+
+    .hero p {
+      margin: 14px 0 0;
+      max-width: 570px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #fff7ed;
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 22px;
+    }
+
+    .hero-points span {
+      font-size: 12px;
+      font-weight: 700;
+      background: white;
+      color: #9a3412;
+      padding: 9px 12px;
+      border-radius: 9px;
+    }
+
+    /* SEARCH + FILTER */
+    .catalog {
+      padding: 30px 0 58px;
+    }
+
+    .catalog-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .catalog-heading h2 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .catalog-heading p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      font-size: 19px;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      height: 52px;
+      padding: 0 16px 0 46px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: white;
+      outline: none;
+      font-size: 14px;
+    }
+
+    #searchInput:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 1px 10px;
+      scrollbar-width: thin;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      background: white;
+      color: #4b5563;
+      border-radius: 100px;
+      padding: 10px 15px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: white;
+    }
+
+    /* PRODUCT GRID */
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 14px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 17px;
+    }
+
+    .product-card {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border: 1px solid #edf0f3;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(15,23,42,.035);
+      transition: transform .18s, box-shadow .18s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(15,23,42,.09);
+    }
+
+    .product-image-wrap {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      background: #f1f5f9;
+      overflow: hidden;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      transition: transform .25s;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.035);
+    }
+
+    .product-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      max-width: calc(100% - 20px);
+      background: #fff;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+      border-radius: 7px;
+      padding: 6px 8px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .product-info {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .product-category {
+      color: var(--orange-dark);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .45px;
+      margin-bottom: 7px;
+    }
+
+    .product-title {
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 800;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .product-slogan {
+      color: #4b5563;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 8px 0 0;
+    }
+
+    .product-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      margin: 7px 0 14px;
+    }
+
+    .price-label {
+      color: #9ca3af;
+      font-size: 11px;
+      margin-top: auto;
+    }
+
+    .price {
+      color: #111827;
+      font-size: 20px;
+      font-weight: 900;
+      margin: 4px 0 13px;
+    }
+
+    .shopee-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 43px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--orange);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: center;
+      transition: .18s;
+    }
+
+    .shopee-btn:hover { background: var(--orange-dark); }
+
+    .shopee-btn.disabled {
+      background: #d1d5db;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .empty-state,
+    .loading,
+    .error-state {
+      text-align: center;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 35px 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .empty-icon {
+      font-size: 34px;
+      margin-bottom: 8px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #1f2937;
+      color: white;
+      padding: 28px 0 85px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .footer-inner strong { font-size: 16px; }
+    .footer-inner p {
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 6px 0 0;
+    }
+
+    .footer-small {
+      color: #9ca3af;
+      font-size: 11px;
+      margin-top: 20px;
+    }
+
+    /* FLOATING WA */
+    .wa-float {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: #16a34a;
+      color: white;
+      padding: 13px 17px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 8px 22px rgba(22,163,74,.28);
+    }
+
+    .wa-icon {
+      width: 23px;
+      height: 23px;
+      display: grid;
+      place-items: center;
+      font-size: 19px;
+    }
+
+    @media (max-width: 1000px) {
+      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 700px) {
+      .container { width: min(100% - 24px, 560px); }
+      .nav { min-height: 62px; }
+      .brand-logo { width: 42px; height: 42px; }
+      .brand-name { font-size: 16px; }
+      .nav-note { display: none; }
+      .hero {
+        margin-top: 14px;
+        padding: 28px 21px;
+        border-radius: 18px;
+      }
+      .hero p { font-size: 13px; }
+      .hero-points { gap: 7px; }
+      .hero-points span { font-size: 10px; padding: 8px 9px; }
+      .catalog { padding-top: 25px; }
+      .catalog-heading h2 { font-size: 22px; }
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+      .product-info { padding: 11px; }
+      .product-title { font-size: 13px; }
+      .product-slogan, .product-desc { font-size: 11px; }
+      .price { font-size: 17px; }
+      .product-label { font-size: 9px; top: 7px; left: 7px; }
+      .shopee-btn { min-height: 40px; font-size: 11px; }
+      .footer-inner { display: block; }
+      .wa-float { right: 13px; bottom: 13px; padding: 12px 15px; }
+    }
+
+    @media (max-width: 360px) {
+      .product-grid { gap: 8px; }
+      .product-info { padding: 9px; }
+      .product-title { font-size: 12px; }
+      .price { font-size: 15px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="#">
+        <img class="brand-logo"
+          src="GAMBAR/LOGO.webp"
+          alt="Logo Aliflam Printing"
+          onerror="this.style.display='none'">
+        <div>
+          <div class="brand-name">ALIFLAM PRINTING</div>
+          <div class="brand-sub">Percetakan & Promosi</div>
+        </div>
+      </a>
+      <div class="nav-note">Gratis Desain & Revisi Sampai Fix</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-content">
+        <span class="hero-tag">KATALOG PRODUK ALIFLAM PRINTING</span>
+        <h1>Bikin Promosi<br>Jadi Lebih Menarik!</h1>
+        <p>
+          Temukan berbagai kebutuhan cetak untuk usaha, acara,
+          dan promosi kamu. Pilih produk, cek harga, lalu pesan
+          langsung melalui Shopee.
+        </p>
+        <div class="hero-points">
+          <span>✓ Gratis Desain</span>
+          <span>✓ Revisi Sampai Fix</span>
+          <span>✓ Praktis & Mudah</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog" id="katalog">
+      <div class="catalog-heading">
+        <div>
+          <h2>Temukan Produk</h2>
+          <p>Pilih produk yang sesuai dengan kebutuhanmu.</p>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input id="searchInput" type="search"
+          placeholder="Cari banner, sticker, brosur..." autocomplete="off">
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="ALL">Semua Produk</button>
+      </div>
+
+      <div id="statusMessage" class="loading">
+        Memuat katalog produk...
+      </div>
+
+      <div id="productArea" hidden>
+        <h3 class="section-title" id="resultTitle">Semua Produk</h3>
+        <div class="product-grid" id="productGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <div class="empty-icon">🔎</div>
+          Produk tidak ditemukan.<br>
+          Coba kata kunci atau kategori lain.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <strong>ALIFLAM PRINTING</strong>
+          <p>Solusi cetak untuk kebutuhan usaha dan promosi kamu.</p>
+        </div>
+        <div>
+          <p>Gratis Desain & Revisi Sampai Fix</p>
+          <p>Pesan mudah melalui Shopee.</p>
+        </div>
+      </div>
+      <div class="footer-small">
+        © <span id="year"></span> Aliflam Printing. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- GANTI NOMOR WA DI BAGIAN SCRIPT DI BAWAH -->
+  <a class="wa-float" id="waButton" href="#" target="_blank" rel="noopener">
+    <span class="wa-icon">☏</span>
+    <span>Hubungi Kami</span>
+  </a>
+
+  <script>
+    // ==========================================
+    // PENGATURAN WEBSITE
+    // ==========================================
+
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbw9hbuK5B5GlnPy6n7ZjvxlIPjAYlXXP4yR1rAMkja981ot4xRuUuJwlXGkO70OSGnonA/exec";
+
+    const IMAGE_FOLDER = "GAMBAR/";
+
+    // GANTI dengan nomor WhatsApp bisnis lo.
+    // Format: kode negara + nomor, tanpa +, spasi, atau strip.
+    const WHATSAPP_NUMBER = "6281234567890";
+
+    // ==========================================
+    // ELEMEN WEBSITE
+    // ==========================================
+
+    const statusMessage = document.getElementById("statusMessage");
+    const productArea = document.getElementById("productArea");
+    const productGrid = document.getElementById("productGrid");
+    const filters = document.getElementById("filters");
+    const searchInput = document.getElementById("searchInput");
+    const resultTitle = document.getElementById("resultTitle");
+    const emptyState = document.getElementById("emptyState");
+
+    let allProducts = [];
+    let activeCategory = "ALL";
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    // ==========================================
+    // BANTUAN FORMAT DATA
+    // ==========================================
+
+    function getField(product, field) {
+      return String(product[field] ?? "").trim();
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, function(char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        }[char];
+      });
+    }
+
+    function formatRupiah(value) {
+      const number = Number(
+        String(value ?? "").replace(/[^\d]/g, "")
+      );
+
+      if (!number || Number.isNaN(number)) {
+        return "Hubungi kami";
+      }
+
+      return "Rp" + number.toLocaleString("id-ID");
+    }
+
+    function getImageUrl(filename) {
+      const cleanName = String(filename || "").trim();
+
+      if (!cleanName) return "";
+
+      // Kalau database sudah berisi URL penuh, pakai langsung.
+      if (/^https?:\/\//i.test(cleanName)) {
+        return cleanName;
+      }
+
+      // Nama file contoh: 1.webp, 2.webp, 3.webp
+      return IMAGE_FOLDER + encodeURIComponent(cleanName);
+    }
+
+    function getShopeeUrl(value) {
+      const text = String(value || "").trim();
+
+      // Ambil URL jika memang tersedia di data.
+      const match = text.match(/https?:\/\/[^\s"'<>]+/i);
+
+      if (!match) return "";
+
+      return match[0].replace(/[),.]+$/, "");
+    }
+
+    // ==========================================
+    // AMBIL DATA DARI GOOGLE SHEETS API
+    // ==========================================
+
+    async function loadProducts() {
+      statusMessage.hidden = false;
+      statusMessage.className = "loading";
+      statusMessage.textContent = "Memuat katalog produk...";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("Server API merespons " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.products)) {
+          throw new Error("Format data API tidak sesuai.");
+        }
+
+        allProducts = data.products.filter(function(product) {
+          return getField(product, "STATUS PRODUK").toUpperCase() === "AKTIF";
+        });
+
+        // Urutkan berdasarkan URUTAN TAMPIL dari database.
+        allProducts.sort(function(a, b) {
+          const orderA = Number(getField(a, "URUTAN TAMPIL")) || 9999;
+          const orderB = Number(getField(b, "URUTAN TAMPIL")) || 9999;
+          return orderA - orderB;
+        });
+
+        buildCategoryFilters();
+        statusMessage.hidden = true;
+        productArea.hidden = false;
+        renderProducts();
+
+      } catch (error) {
+        console.error("Gagal memuat produk:", error);
+        statusMessage.className = "error-state";
+        statusMessage.innerHTML =
+          "<strong>Katalog belum bisa dimuat.</strong><br>" +
+          "Coba muat ulang halaman. Jika masih gagal, periksa API dan izin aksesnya.";
+      }
+    }
+
+    // ==========================================
+    // FILTER KATEGORI
+    // ==========================================
+
+    function buildCategoryFilters() {
+      const categories = [...new Set(
+        allProducts.map(function(product) {
+          return getField(product, "KATEGORI");
+        }).filter(Boolean)
+      )];
+
+      filters.innerHTML =
+        '<button class="filter-btn active" data-category="ALL">Semua Produk</button>';
+
+      categories.forEach(function(category) {
+        const button = document.createElement("button");
+        button.className = "filter-btn";
+        button.dataset.category = category;
+        button.textContent = category;
+        filters.appendChild(button);
+      });
+    }
+
+    filters.addEventListener("click", function(event) {
+      const button = event.target.closest(".filter-btn");
+      if (!button) return;
+
+      activeCategory = button.dataset.category;
+
+      document.querySelectorAll(".filter-btn").forEach(function(item) {
+        item.classList.toggle("active", item === button);
+      });
+
+      renderProducts();
+    });
+
+    // ==========================================
+    // PENCARIAN PRODUK
+    // ==========================================
+
+    searchInput.addEventListener("input", renderProducts);
+
+    function renderProducts() {
+      const keyword = searchInput.value.trim().toLowerCase();
+
+      const filteredProducts = allProducts.filter(function(product) {
+        const category = getField(product, "KATEGORI");
+        const categoryMatch =
+          activeCategory === "ALL" || category === activeCategory;
+
+        const searchableText = [
+          getField(product, "ID PRODUK"),
+          getField(product, "KATEGORI"),
+          getField(product, "JENIS"),
+          getField(product, "SUB JENIS"),
+          getField(product, "JUDUL PRODUK"),
+          getField(product, "SLOGAN PRODUK"),
+          getField(product, "DESKRIPSI SINGKAT")
+        ].join(" ").toLowerCase();
+
+        return categoryMatch && searchableText.includes(keyword);
+      });
+
+      const categoryName =
+        activeCategory === "ALL" ? "Semua Produk" : activeCategory;
+
+      resultTitle.textContent =
+        categoryName + " (" + filteredProducts.length + ")";
+
+      productGrid.innerHTML = "";
+
+      if (filteredProducts.length === 0) {
+        emptyState.hidden = false;
+        return;
+      }
+
+      emptyState.hidden = true;
+
+      filteredProducts.forEach(function(product) {
+        productGrid.appendChild(createProductCard(product));
+      });
+    }
+
+    // ==========================================
+    // KARTU PRODUK
+    // ==========================================
+
+    function createProductCard(product) {
+      const id = getField(product, "ID PRODUK");
+      const category = getField(product, "KATEGORI");
+      const title = getField(product, "JUDUL PRODUK");
+      const slogan = getField(product, "SLOGAN PRODUK");
+      const description = getField(product, "DESKRIPSI SINGKAT");
+      const price = getField(product, "HARGA MULAI");
+      const imageName = getField(product, "GAMBAR");
+      const label = getField(product, "LABEL");
+      const imageUrl = getImageUrl(imageName);
+      const shopeeUrl = getShopeeUrl(getField(product, "LINK SHOPEE"));
+
+      const card = document.createElement("article");
+      card.className = "product-card";
+
+      const imageWrap = document.createElement("div");
+      imageWrap.className = "product-image-wrap";
+
+      if (imageUrl) {
+        const image = document.createElement("img");
+        image.className = "product-image";
+        image.src = imageUrl;
+        image.alt = title || "Produk Aliflam Printing";
+        image.loading = "lazy";
+        image.onerror = function() {
+          this.style.display = "none";
+          imageWrap.style.background = "#f1f5f9";
+        };
+        imageWrap.appendChild(image);
+      }
+
+      if (label) {
+        const labelEl = document.createElement("span");
+        labelEl.className = "product-label";
+        labelEl.textContent = label;
+        imageWrap.appendChild(labelEl);
+      }
+
+      const info = document.createElement("div");
+      info.className = "product-info";
+
+      const categoryEl = document.createElement("div");
+      categoryEl.className = "product-category";
+      categoryEl.textContent = category;
+
+      const titleEl = document.createElement("h3");
+      titleEl.className = "product-title";
+      titleEl.textContent = title || "Produk Aliflam Printing";
+
+      const sloganEl = document.createElement("p");
+      sloganEl.className = "product-slogan";
+      sloganEl.textContent = slogan;
+
+      const descEl = document.createElement("p");
+      descEl.className = "product-desc";
+      descEl.textContent = description;
+
+      const priceLabel = document.createElement("div");
+      priceLabel.className = "price-label";
+      priceLabel.textContent = "Harga mulai";
+
+      const priceEl = document.createElement("div");
+      priceEl.className = "price";
+      priceEl.textContent = formatRupiah(price);
+
+      const button = document.createElement("a");
+      button.className = "shopee-btn";
+      button.textContent = "LIHAT DI SHOPEE";
+
+      if (shopeeUrl) {
+        button.href = shopeeUrl;
+        button.target = "_blank";
+        button.rel = "noopener noreferrer";
+      } else {
+        button.href = "#";
+        button.classList.add("disabled");
+        button.setAttribute("aria-disabled", "true");
+        button.addEventListener("click", function(event) {
+          event.preventDefault();
+          alert(
+            "Link Shopee untuk produk ini belum terbaca. " +
+            "Pastikan kolom LINK SHOPEE berisi URL produk yang lengkap."
+          );
+        });
+      }
+
+      info.append(
+        categoryEl,
+        titleEl,
+        sloganEl,
+        descEl,
+        priceLabel,
+        priceEl,
+        button
+      );
+
+      card.append(imageWrap, info);
+      return card;
+    }
+
+    // ==========================================
+    // TOMBOL WHATSAPP
+    // ==========================================
+
+    const waButton = document.getElementById("waButton");
+    const waMessage = encodeURIComponent(
+      "Halo Aliflam Printing, saya mau tanya tentang produk percetakan."
+    );
+
+    waButton.href =
+      "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + waMessage;
+
+    // ==========================================
+    // JALANKAN
+    // ==========================================
+
+    loadProducts();
+  </script>
+</body>
+</html>
