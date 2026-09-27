@@ -929,9 +929,18 @@
 
     function buildCategoryFilters() {
       const categories = [...new Set(
+
         allProducts.map(function(product) {
+
           return getField(product, "KATEGORI");
-        }).filter(Boolean)
+
+        }).filter(function(category) {
+
+          return category &&
+            category.trim().toUpperCase() !== "BEST SELLER";
+
+        })
+
       )];
 
       filters.innerHTML =
@@ -976,14 +985,18 @@
       const filteredProducts = allProducts.filter(function(product) {
         const category = getField(product, "KATEGORI");
 
-          const label = getField(product, "LABEL").toUpperCase();
+          const label = String(getField(product, "LABEL"))
+            .trim()
+            .toUpperCase();
 
           const categoryMatch =
             activeCategory === "ALL" ||
             (activeCategory === "BEST_SELLER"
-              ? label === "BEST SELLER"
-              : category === activeCategory);
 
+              ? label.includes("BEST SELLER")
+
+              : category === activeCategory);
+              
         const searchableText = [
           getField(product, "ID PRODUK"),
           getField(product, "KATEGORI"),
