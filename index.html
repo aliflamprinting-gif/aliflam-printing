@@ -610,10 +610,21 @@
       margin-bottom: 8px;
     }
 
+    .consult-back {
+      display: block;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
     .consult-title {
       margin: 0 42px 18px 0;
       font-size: 22px;
       line-height: 1.3;
+      color: #dc2626;
     }
 
     .consult-options {
@@ -942,8 +953,10 @@
       </div>
 
       <div id="consultStepTwo" hidden>
-        <div class="consult-step">LANGKAH 2 DARI 2</div>
-        <h2 class="consult-title">Pilih kondisi</h2>
+        <button class="consult-step consult-back" id="consultBack" type="button">
+          ← LANGKAH 2 DARI 2
+        </button>
+        <h2 class="consult-title">Kondisi Desain/File</h2>
 
         <div class="consult-options" id="conditionOptions">
           <button class="consult-option" type="button">Sudah punya desain</button>
@@ -1435,6 +1448,7 @@
     const productOptions = document.getElementById("productOptions");
     const conditionOptions = document.getElementById("conditionOptions");
     const consultNext = document.getElementById("consultNext");
+    const consultBack = document.getElementById("consultBack");
     const consultSend = document.getElementById("consultSend");
     const consultOther = document.getElementById("consultOther");
     const consultOtherInput = document.getElementById("consultOtherInput");
@@ -1486,6 +1500,11 @@
 
       consultStepOne.hidden = true;
       consultStepTwo.hidden = false;
+    });
+
+    consultBack.addEventListener("click", function() {
+      consultStepTwo.hidden = true;
+      consultStepOne.hidden = false;
     });
 
     conditionOptions.addEventListener("click", function(event) {
