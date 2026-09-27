@@ -586,8 +586,10 @@
       height: 34px;
       border: 0;
       border-radius: 50%;
-      background: #f1f5f9;
+      background: #dc2626;
+      color: #ffffff;
       font-size: 22px;
+      font-weight: 700;
       cursor: pointer;
     }
     .wa-step { margin: 0 0 18px; }
@@ -613,6 +615,32 @@
       border-color: #16a34a;
       background: #f0fdf4;
       color: #166534;
+    }
+    .wa-step[hidden] { display: none; }
+    .wa-next,
+    .wa-back {
+      width: 100%;
+      min-height: 44px;
+      border: 0;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .wa-next {
+      margin-top: 12px;
+      background: #16a34a;
+      color: #fff;
+    }
+    .wa-next:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    .wa-back {
+      margin: 0 0 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
     }
     .wa-other-input {
       width: 100%;
@@ -768,7 +796,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 16px;
       background: rgba(15,23,42,.65);
     }
 
@@ -777,11 +805,11 @@
     .help-panel {
       position: relative;
       width: min(760px, 100%);
-      max-height: 92vh;
+      max-height: 90vh;
       overflow-y: auto;
       background: #fff;
       border-radius: 18px;
-      padding: 24px;
+      padding: 22px;
       box-shadow: 0 20px 60px rgba(0,0,0,.25);
     }
 
@@ -868,7 +896,7 @@
     }
 
     @media (max-width: 520px) {
-      .help-panel { padding: 19px; max-height: 94vh; }
+      .help-panel { padding: 18px; max-height: 90vh; }
       .help-title { font-size: 20px; }
       .help-open { width: 100%; }
     }
@@ -917,13 +945,6 @@
       </div>
     </section>
 
-    <div class="help-entry">
-      <button class="help-open" id="helpOpen" type="button">
-        <span aria-hidden="true">ⓘ</span>
-        <span>PUSAT BANTUAN &amp; INFORMASI</span>
-      </button>
-    </div>
-
     <section class="catalog" id="katalog">
       <div class="catalog-heading">
         <div>
@@ -964,6 +985,14 @@
         </div>
       </div>
     </section>
+
+    <div class="help-entry">
+      <button class="help-open" id="helpOpen" type="button">
+        <span aria-hidden="true">ⓘ</span>
+        <span>PUSAT BANTUAN &amp; INFORMASI</span>
+      </button>
+    </div>
+
   </main>
 
   <footer>
@@ -1052,8 +1081,8 @@
         <button class="wa-close" id="waClose" type="button" aria-label="Tutup">&times;</button>
       </div>
 
-      <div class="wa-step">
-        <h3>Mau cetak apa?</h3>
+      <div class="wa-step" id="waStep1">
+        <h3>Langkah 1 — Mau cetak apa?</h3>
         <div class="wa-options" id="waProductOptions">
           <button class="wa-option" type="button" data-product="BANNER SPANDUK">BANNER SPANDUK</button>
           <button class="wa-option" type="button" data-product="X-BANNER">X-BANNER</button>
@@ -1069,10 +1098,12 @@
           <input class="wa-other-input" id="waOtherInput" type="text" placeholder="Tulis kebutuhanmu (opsional)">
           <p class="wa-other-note">Isi yang mau ditanyakan agar admin lebih mudah menjawab pertanyaanmu</p>
         </div>
+        <button class="wa-next" id="waNext" type="button" disabled>Lanjut</button>
       </div>
 
-      <div class="wa-step">
-        <h3>Pilih kondisi</h3>
+      <div class="wa-step" id="waStep2" hidden>
+        <h3>Langkah 2 — Pilih kondisi file/desain</h3>
+        <button class="wa-back" id="waBack" type="button">← Kembali ke Langkah 1</button>
         <div class="wa-options" id="waConditionOptions">
           <button class="wa-option" type="button" data-condition="SUDAH PUNYA DESAIN">SUDAH PUNYA DESAIN</button>
           <button class="wa-option" type="button" data-condition="SUDAH PUNYA DESAIN, TAPI PERLU REVISI">SUDAH PUNYA DESAIN, TAPI PERLU REVISI</button>
@@ -1556,17 +1587,24 @@
     const waOtherWrap = document.getElementById("waOtherWrap");
     const waOtherInput = document.getElementById("waOtherInput");
     const waSend = document.getElementById("waSend");
+    const waStep1 = document.getElementById("waStep1");
+    const waStep2 = document.getElementById("waStep2");
+    const waNext = document.getElementById("waNext");
+    const waBack = document.getElementById("waBack");
 
     let selectedWaProduct = "";
     let selectedWaCondition = "";
 
     function updateWaSendButton() {
       const ready = Boolean(selectedWaProduct && selectedWaCondition);
+      waNext.disabled = !selectedWaProduct;
       waSend.disabled = !ready;
       waSend.classList.toggle("ready", ready);
     }
 
     function openWaModal() {
+      waStep1.hidden = false;
+      waStep2.hidden = true;
       waModal.classList.add("open");
       waModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -1580,6 +1618,16 @@
 
     waButton.addEventListener("click", openWaModal);
     waClose.addEventListener("click", closeWaModal);
+    waNext.addEventListener("click", function() {
+      if (!selectedWaProduct) return;
+      waStep1.hidden = true;
+      waStep2.hidden = false;
+      waStep2.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+    waBack.addEventListener("click", function() {
+      waStep2.hidden = true;
+      waStep1.hidden = false;
+    });
 
     waModal.addEventListener("click", function(event) {
       if (event.target === waModal) closeWaModal();
