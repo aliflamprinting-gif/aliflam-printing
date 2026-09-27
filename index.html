@@ -1016,9 +1016,7 @@
           const categoryMatch =
             activeCategory === "ALL" ||
             (activeCategory === "BEST_SELLER"
-
-              ? label.includes("BEST SELLER")
-
+              ? category.trim().toUpperCase() === "BEST SELLER"
               : category === activeCategory);
 
         const searchableText = [
