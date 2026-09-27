@@ -460,16 +460,25 @@
     }
 
     .price-label {
+
       color: #9ca3af;
+
       font-size: 11px;
-      margin-top: auto;
+
+      margin-top: 14px;
+
     }
 
     .price {
+
       color: #dc2626;
+
       font-size: 20px;
+
       font-weight: 900;
-      margin: 10px 0 13px;
+
+      margin: 4px 0 13px;
+
     }
 
     .shopee-btn {
@@ -928,34 +937,49 @@
     // ==========================================
 
     function buildCategoryFilters() {
+
       const categories = [...new Set(
 
         allProducts.map(function(product) {
 
           return getField(product, "KATEGORI");
 
-        }).filter(function(category) {
+        }).filter(Boolean)
 
-          return category &&
-            category.trim().toUpperCase() !== "BEST SELLER";
+      )].filter(function(category) {
 
-        })
+        return category.trim().toUpperCase() !== "BEST SELLER";
 
-      )];
+      });
+
+
 
       filters.innerHTML =
+
         '<button class="filter-btn active" data-category="BEST_SELLER">Best Seller</button>' +
+
         '<button class="filter-btn" data-category="ALL">Semua Produk</button>';
 
+
+
       categories.forEach(function(category) {
+
         const button = document.createElement("button");
 
+
+
         button.className = "filter-btn";
+
         button.dataset.category = category;
+
         button.textContent = category;
 
+
+
         filters.appendChild(button);
+
       });
+
     }
 
     filters.addEventListener("click", function(event) {
@@ -996,7 +1020,7 @@
               ? label.includes("BEST SELLER")
 
               : category === activeCategory);
-              
+
         const searchableText = [
           getField(product, "ID PRODUK"),
           getField(product, "KATEGORI"),
