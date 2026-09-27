@@ -381,8 +381,10 @@
       height: 36px;
       border: 0;
       border-radius: 50%;
-      background: #f3f4f6;
+      background: #dc2626;
+      color: #ffffff;
       font-size: 22px;
+      font-weight: 700;
       cursor: pointer;
     }
 
@@ -815,7 +817,7 @@
     const emptyState = document.getElementById("emptyState");
 
     let allProducts = [];
-    let activeCategory = "ALL";
+    let activeCategory = "BEST_SELLER";
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
@@ -933,7 +935,8 @@
       )];
 
       filters.innerHTML =
-        '<button class="filter-btn active" data-category="ALL">Semua Produk</button>';
+        '<button class="filter-btn active" data-category="BEST_SELLER">Best Seller</button>' +
+        '<button class="filter-btn" data-category="ALL">Semua Produk</button>';
 
       categories.forEach(function(category) {
         const button = document.createElement("button");
@@ -973,8 +976,13 @@
       const filteredProducts = allProducts.filter(function(product) {
         const category = getField(product, "KATEGORI");
 
-        const categoryMatch =
-          activeCategory === "ALL" || category === activeCategory;
+          const label = getField(product, "LABEL").toUpperCase();
+
+          const categoryMatch =
+            activeCategory === "ALL" ||
+            (activeCategory === "BEST_SELLER"
+              ? label === "BEST SELLER"
+              : category === activeCategory);
 
         const searchableText = [
           getField(product, "ID PRODUK"),
@@ -990,7 +998,11 @@
       });
 
       const categoryName =
-        activeCategory === "ALL" ? "Semua Produk" : activeCategory;
+        activeCategory === "BEST_SELLER"
+          ? "Best Seller"
+          : activeCategory === "ALL"
+            ? "Semua Produk"
+            : activeCategory;
 
       resultTitle.textContent =
         categoryName + " (" + filteredProducts.length + ")";
