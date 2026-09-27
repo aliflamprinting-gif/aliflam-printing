@@ -694,6 +694,145 @@
       font-size: 11px;
     }
 
+
+    /* PUSAT BANTUAN & INFORMASI */
+    .help-entry {
+      display: flex;
+      justify-content: center;
+      padding: 18px 0 0;
+    }
+
+    .help-open {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 11px 17px;
+      border: 1px solid #BFDBFE;
+      border-radius: 11px;
+      background: #EAF2FC;
+      color: #0B2545;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .18s;
+    }
+
+    .help-open:hover { background: #dbeafe; }
+
+    .help-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      background: rgba(15,23,42,.65);
+    }
+
+    .help-modal.open { display: flex; }
+
+    .help-panel {
+      position: relative;
+      width: min(760px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .help-title {
+      margin: 0 45px 6px 0;
+      color: #123B70;
+      font-size: 23px;
+      line-height: 1.3;
+    }
+
+    .help-subtitle {
+      margin: 0 35px 18px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .help-search {
+      width: 100%;
+      min-height: 46px;
+      margin-bottom: 17px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .help-search:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(18,59,112,.12);
+    }
+
+    .help-category {
+      margin: 17px 0 9px;
+      color: #123B70;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .help-item {
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .help-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      background: #fff;
+      color: var(--ink);
+      text-align: left;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .help-question:hover { background: #f8fafc; }
+    .help-chevron { color: #123B70; font-size: 17px; flex: 0 0 auto; }
+
+    .help-answer {
+      padding: 0 14px 15px;
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.75;
+      white-space: pre-line;
+    }
+
+    .help-empty {
+      padding: 25px 14px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 520px) {
+      .help-panel { padding: 19px; max-height: 94vh; }
+      .help-title { font-size: 20px; }
+      .help-open { width: 100%; }
+    }
+
     @media (max-width: 420px) {
       .consult-options { grid-template-columns: 1fr; }
       .consult-panel { padding: 19px; }
@@ -764,106 +903,7 @@
       .product-title { font-size: 12px; }
       .price { font-size: 15px; }
     }
-  
-
-/* PUSAT BANTUAN & INFORMASI — dipulihkan dari versi sebelumnya */
-.help-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 120;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      background: rgba(15,23,42,.65);
-    }
-
-.help-panel {
-      position: relative;
-      width: min(760px, 100%);
-      max-height: 90vh;
-      overflow-y: auto;
-      background: #fff;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
-    }
-
-.help-title {
-      margin: 0 45px 6px 0;
-      color: #123B70;
-      font-size: 23px;
-      line-height: 1.3;
-    }
-
-.help-search {
-      width: 100%;
-      min-height: 46px;
-      margin-bottom: 17px;
-      padding: 0 14px;
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      outline: none;
-      font-size: 14px;
-    }
-
-.help-category {
-      margin: 17px 0 9px;
-      color: #123B70;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-.help-item {
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      margin-bottom: 8px;
-      overflow: hidden;
-    }
-
-.help-question {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      width: 100%;
-      padding: 14px;
-      border: 0;
-      background: #fff;
-      color: var(--ink);
-      text-align: left;
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.5;
-      cursor: pointer;
-    }
-
-.help-answer {
-      padding: 0 14px 15px;
-      color: #4b5563;
-      font-size: 13px;
-      line-height: 1.75;
-      white-space: pre-line;
-    }
-
-.help-chevron { color: #123B70; font-size: 17px; flex: 0 0 auto; }
-
-.help-empty {
-      padding: 25px 14px;
-      border: 1px dashed var(--line);
-      border-radius: 12px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-@media (max-width: 520px) {
-      .help-panel { padding: 19px; max-height: 90vh; }
-      .help-title { font-size: 20px; }
-      .help-open { width: 100%; }
-    }
-</style>
+  </style>
 </head>
 
 <body>
@@ -907,10 +947,12 @@
       </div>
     </section>
 
-<button class="help-open" id="helpOpen" type="button">
+    <div class="help-entry">
+      <button class="help-open" id="helpOpen" type="button">
         <span aria-hidden="true">ⓘ</span>
         <span>PUSAT BANTUAN &amp; INFORMASI</span>
       </button>
+    </div>
 
     <section class="catalog" id="katalog">
       <div class="catalog-heading">
@@ -973,17 +1015,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- MODAL PUSAT BANTUAN & INFORMASI -->
-  <div class="help-modal" id="helpModal" aria-hidden="true">
-    <div class="help-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-      <button class="modal-close" id="helpClose" type="button" aria-label="Tutup">&times;</button>
-      <h2 class="help-title" id="helpTitle">Pusat Bantuan &amp; Informasi</h2>
-      <p class="help-subtitle">Temukan informasi seputar pemesanan dan layanan Aliflam Printing.</p>
-      <input class="help-search" id="helpSearch" type="search" placeholder="Cari pertanyaan atau kata kunci..." autocomplete="off">
-      <div id="helpList"></div>
-    </div>
-  </div>
 
   <!-- MODAL DETAIL PRODUK -->
   <div class="product-modal" id="productModal" aria-hidden="true">
@@ -1069,7 +1100,7 @@
 
       <div id="consultStepTwo" hidden>
         <button class="consult-step consult-back" id="consultBack" type="button">
-          ← Kembali ke Langkah 1
+          ← LANGKAH 2 DARI 2
         </button>
         <h2 class="consult-title">Kondisi Desain/File</h2>
 
@@ -1084,6 +1115,17 @@
           HUBUNGI WHATSAPP
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL PUSAT BANTUAN & INFORMASI -->
+  <div class="help-modal" id="helpModal" aria-hidden="true">
+    <div class="help-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="modal-close" id="helpClose" type="button" aria-label="Tutup">&times;</button>
+      <h2 class="help-title" id="helpTitle">Pusat Bantuan &amp; Informasi</h2>
+      <p class="help-subtitle">Temukan informasi seputar pemesanan dan layanan Aliflam Printing.</p>
+      <input class="help-search" id="helpSearch" type="search" placeholder="Cari pertanyaan atau kata kunci..." autocomplete="off">
+      <div id="helpList"></div>
     </div>
   </div>
 
@@ -1786,8 +1828,7 @@
       if (event.key === "Escape" && helpModal.classList.contains("open")) closeHelpModal();
     });
 
-    
-// ==========================================
+    // ==========================================
     // JALANKAN WEBSITE
     // ==========================================
 
