@@ -2177,7 +2177,11 @@
           el.required=vals.length>0;
           el.disabled=vals.length===0;
           const field=el.closest(".wc-field") || el.parentElement;
-          field.style.display=vals.length>0?"":"none";
+          const show=vals.length>0;
+          field.style.display=show?"":"none";
+          field.hidden=!show;
+          const labelElement=field.querySelector("label");
+          if(labelElement) labelElement.style.display=show?"":"none";
         };
         fill(wc("wcVar1"),k1,"variasi 1");fill(wc("wcVar2"),k2,"variasi 2");
       }
