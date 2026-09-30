@@ -960,12 +960,28 @@
     .wc-item{padding:12px 0;border-bottom:1px solid #edf0f5}
     .wc-item:last-child{border-bottom:0}
     .wc-qris{display:block;width:min(100%,390px);height:auto;margin:12px auto;border:1px solid #e2e8f0;border-radius:12px}
+    .aliflam-alert-overlay{position:fixed;inset:0;z-index:1500;background:rgba(15,23,42,.62);display:none;align-items:center;justify-content:center;padding:36px 20px;overflow-y:auto;backdrop-filter:blur(3px)}
+    .aliflam-alert-overlay.open{display:flex}
+    .aliflam-alert-card{width:min(100%,370px);background:#fff;border-radius:22px;padding:28px 22px 22px;margin:28px auto;text-align:center;box-shadow:0 24px 70px rgba(15,23,42,.28);animation:aliflamPopIn .18s ease-out}
+    .aliflam-alert-icon{width:54px;height:54px;border-radius:18px;margin:0 auto 14px;display:grid;place-items:center;background:#dbeafe;color:#1d4ed8;font-size:28px;font-weight:900}
+    .aliflam-alert-brand{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#64748b;margin-bottom:7px}
+    .aliflam-alert-card h3{margin:0 0 8px;color:#172033;font-size:20px;line-height:1.3}
+    .aliflam-alert-card p{margin:0 0 20px;color:#64748b;font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+    .aliflam-alert-ok{width:100%;border:0;border-radius:12px;background:#1d4ed8;color:#fff;font-size:14px;font-weight:900;padding:14px 16px;cursor:pointer}
+    @keyframes aliflamPopIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @media(max-width:560px){.aliflam-alert-overlay{padding:42px 20px}.aliflam-alert-card{padding:30px 20px 22px;margin:32px auto;border-radius:20px}}
     .wc-hidden{display:none!important}
+    .wc-success-overlay{position:fixed;inset:0;z-index:1300;background:#0f172a99;display:flex;align-items:center;justify-content:center;padding:32px 18px;overflow:auto}
+    .wc-success-box{width:min(100%,390px);background:#fff;border-radius:18px;padding:26px 20px;margin:24px auto;box-shadow:0 18px 50px #0003;text-align:center}
+    .wc-success-icon{width:48px;height:48px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:30px;font-weight:900;display:grid;place-items:center;margin:0 auto 14px}
+    .wc-success-box h3{font-size:18px;line-height:1.4;margin:0 0 14px;color:#172033}
+    .wc-success-actions{display:grid;gap:8px}
+    .wc-success-actions .wc-btn{margin-top:0}
     @media(max-width:560px){.web-checkout{padding:12px}.wc-card{padding:14px}.wc-grid{grid-template-columns:1fr}.wc-head h2{font-size:19px}}
 
 
     body { padding-bottom: 76px; }
-    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:1000;display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid #e5e7eb;padding:7px 8px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px #0f172a0d}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:1000;display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-top:1px solid #e5e7eb;padding:7px 8px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px #0f172a0d}
     .bottom-nav-btn{border:0;background:transparent;color:#64748b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;font-weight:800;cursor:pointer}
     .bottom-nav-btn span{font-size:21px;line-height:1.1}
     .bottom-nav-btn small{font-size:9px;letter-spacing:.2px}
@@ -1173,15 +1189,14 @@
             <select id="wcDesign" required><option value="">PILIH SALAH SATU</option><option value="own">Sudah punya desain</option><option value="new">Belum punya desain</option></select>
           </div>
           <div class="wc-field"><label for="wcBannerFinish">Finishing</label><select id="wcBannerFinish"></select></div>
-          <p class="wc-muted">Ukuran dihitung dengan kalkulator banner lama. Luas dibulatkan ke atas per 0,5 m² (2 PCS). Semua finishing memiliki harga sama.</p>
+          
         </div>
         <div class="wc-field"><label for="wcQty">Jumlah</label><input id="wcQty" type="number" min="1" step="1" value="1"></div>
+        <p class="wc-muted" id="wcBannerSummary">Cetak 1x ukuran 120x50 CM</p>
         <div class="wc-muted" id="wcMinHint"></div>
-        <div class="wc-line"><span>Harga satuan / PCS</span><b id="wcUnit">—</b></div>
+        <div class="wc-line" id="wcUnitLine"><span>Harga satuan / PCS</span><b id="wcUnit">—</b></div>
         <div class="wc-line"><span>Subtotal item</span><b id="wcItemSubtotal">—</b></div>
         <button class="wc-btn secondary" id="wcAdd" type="button">TAMBAH KE KERANJANG</button>
-        <button class="wc-btn secondary" id="wcViewCart" type="button">LIHAT KERANJANG</button>
-        <button class="wc-btn light" id="wcBack" type="button">KEMBALI KE KATALOG</button>
         <p class="wc-muted">Checkout tahap awal hanya menghitung subtotal produk. Ongkir belum termasuk dan pesanan belum disimpan.</p>
       </section>
       <section class="wc-card wc-hidden" id="wcCartPage">
@@ -1200,6 +1215,28 @@
         <p class="wc-muted">Belum ada konfirmasi atau verifikasi pembayaran otomatis pada tahap ini.</p>
         <button class="wc-btn light" id="wcBackCart" type="button">KEMBALI KE KERANJANG</button>
       </section>
+    </div>
+  </div>
+
+    <div class="wc-success-overlay wc-hidden" id="wcSuccessPopup" role="dialog" aria-modal="true" aria-labelledby="wcSuccessTitle">
+      <div class="wc-success-box">
+        <div class="wc-success-icon" aria-hidden="true">✓</div>
+        <h3 id="wcSuccessTitle">Pesanan dimasukan keranjang!</h3>
+        <div class="wc-success-actions">
+          <button class="wc-btn secondary" id="wcSuccessView" type="button">LIHAT KERANJANG</button>
+          <button class="wc-btn light" id="wcSuccessAddMore" type="button">TAMBAH PESANAN LAIN</button>
+        </div>
+      </div>
+    </div>
+
+  <!-- POPUP NOTIFIKASI ALIFLAM -->
+  <div class="aliflam-alert-overlay" id="aliflamAlert" aria-hidden="true">
+    <div class="aliflam-alert-card" role="alertdialog" aria-modal="true" aria-labelledby="aliflamAlertTitle" aria-describedby="aliflamAlertMessage">
+      <div class="aliflam-alert-icon" id="aliflamAlertIcon" aria-hidden="true">!</div>
+      <div class="aliflam-alert-brand">ALIFLAM PRINTING</div>
+      <h3 id="aliflamAlertTitle">Perhatian</h3>
+      <p id="aliflamAlertMessage"></p>
+      <button type="button" class="aliflam-alert-ok" id="aliflamAlertOk">MENGERTI</button>
     </div>
   </div>
 
@@ -1276,7 +1313,6 @@
   <nav class="bottom-nav" aria-label="Navigasi utama">
     <button type="button" class="bottom-nav-btn" data-page="beranda"><span>⌂</span><small>BERANDA</small></button>
     <button type="button" class="bottom-nav-btn active" data-page="produk"><span>▦</span><small>PRODUK</small></button>
-    <button type="button" class="bottom-nav-btn" data-page="keranjang"><span>🛒</span><small>KERANJANG</small></button>
     <button type="button" class="bottom-nav-btn" data-page="pesanan"><span>▤</span><small>PESANAN SAYA</small></button>
   </nav>
 
@@ -1855,6 +1891,34 @@
     // CHECKOUT WEB (belum menyimpan order)
     // ==========================================
     const wc = id => document.getElementById(id);
+    function aliflamAlert(message) {
+      const overlay=document.getElementById("aliflamAlert");
+      const msg=document.getElementById("aliflamAlertMessage");
+      const title=document.getElementById("aliflamAlertTitle");
+      const icon=document.getElementById("aliflamAlertIcon");
+      const text=String(message||"");
+      msg.textContent=text;
+      const isError=/belum|gagal|isi |pilih |minimal|tidak tersedia|periksa/i.test(text);
+      title.textContent=isError?"Perlu diperiksa":"Informasi";
+      icon.textContent=isError?"!":"✓";
+      icon.style.background=isError?"#fee2e2":"#dbeafe";
+      icon.style.color=isError?"#b91c1c":"#1d4ed8";
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden","false");
+      document.getElementById("aliflamAlertOk").focus();
+    }
+    function closeAliflamAlert() {
+      const overlay=document.getElementById("aliflamAlert");
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden","true");
+    }
+    document.getElementById("aliflamAlertOk").addEventListener("click",closeAliflamAlert);
+    document.getElementById("aliflamAlert").addEventListener("click",function(e){
+      if(e.target===this) closeAliflamAlert();
+    });
+    document.addEventListener("keydown",function(e){
+      if(e.key==="Escape") closeAliflamAlert();
+    });
     let wcCurrentProduct = null;
     let wcCart = [];
     let wcPreviousBodyOverflow = "";
@@ -1864,11 +1928,6 @@
       wc("wcPaymentPage").classList.toggle("wc-hidden",page!=="payment");
     }
     const wcBannerIds = new Set(["P009","P010","P011"]);
-    const wcPrices = {
-      FC280:{own:12500,new:15000},
-      FC340:{own:17500,new:20000},
-      KC440:{own:25000,new:30000}
-    };
     const wcFmt = n => "Rp" + Math.round(n).toLocaleString("id-ID");
     const wcNum = v => Number(String(v ?? "").replace(/[^\d]/g,"")) || 0;
     function wcField(row,key) {
@@ -1971,20 +2030,29 @@
     }
     function wcCalcItem() {
       const qty=Number(wc("wcQty").value);
-      let unit=0,pcs=qty,detail="",choiceValid=true;
+      let unit=0,pcs=qty,detail="",choiceValid=true,row=null;
       if(wcIsBanner()) {
+        const rows=wcRowsForProduct(String(wcCurrentProduct && wcCurrentProduct["ID PRODUK"] || "").trim());
+        const finish=String(wc("wcBannerFinish").value||"").trim().toUpperCase();
+        row=rows.find(r=>String(wcField(r,"OPSI VARIASI 2")||"").trim().toUpperCase()===finish) || null;
+        const note=String(wcField(row,"CATATAN")||"").trim();
+        const customSize=note==="Ukuran diisi manual sesuai pesanan.";
+        wc("wcUnitLine").style.display=customSize?"none":"";
         const w=Number(wc("wcWidth").value),h=Number(wc("wcHeight").value);
-        const id=String(wcCurrentProduct && wcCurrentProduct["ID PRODUK"] || "").trim();
-        const material={P009:"FC280",P010:"FC340",P011:"KC440"}[id];
+        wc("wcBannerSummary").textContent=`Cetak ${Number.isInteger(qty)&&qty>0?qty:1}x ukuran ${w>0?w:0}x${h>0?h:0} CM`;
         const calc=(w>0&&h>0)?wcBannerCalc(w,h):null;
-        unit=wcPrices[material][wc("wcDesign").value] || 0;
-        pcs=calc?calc.pcs*qty:0;
-        choiceValid=!!wc("wcDesign").value && !!wc("wcBannerFinish").value;
-        detail=calc?`${w}x${h} cm · ${material} · ${calc.area} m² · ${calc.pcs} PCS/banner`:"Isi ukuran banner";
+        unit=row?wcNum(wcField(row,"HARGA JUAL (Rp)")):0;
+        if(customSize) pcs=calc?calc.pcs*qty:0;
+        choiceValid=!!row && !!wc("wcDesign").value && !!finish && (!customSize || !!calc);
+        const material=wcField(row,"OPSI VARIASI 1") || "";
+        detail=customSize
+          ?(calc?`${w}x${h} cm · ${material} · ${calc.area} m² · ${calc.pcs} PCS/banner`:"Isi ukuran banner")
+          :`${material} · ${finish}`;
         wc("wcMinHint").classList.remove("wc-min-alert");
-        wc("wcMinHint").textContent="Finishing dipilih dari variasi katalog; seluruh finishing memiliki harga sama.";
+        wc("wcMinHint").textContent="";
       } else {
-        const row=wcSelectedRow();
+        wc("wcUnitLine").style.display="";
+        row=wcSelectedRow();
         unit=row?wcNum(wcField(row,"HARGA JUAL (Rp)")):0;
         const min=row?Math.max(1, Number(wcField(row,"MINIMAL ORDER"))||1):1;
         wc("wcQty").min=String(min);
@@ -2024,9 +2092,13 @@
     wc("wcAdd").addEventListener("click",()=>{
       const qty=Number(wc("wcQty").value),unit=Number(wc("wcAdd").dataset.unit),pcs=Number(wc("wcAdd").dataset.pcs);
       const id=String(wcCurrentProduct && wcCurrentProduct["ID PRODUK"] || "").trim(),banner=wcIsBanner();
-      const row=banner?null:wcSelectedRow();
+      const bannerRows=banner?wcRowsForProduct(id):[];
+      const row=banner
+        ?(bannerRows.find(r=>String(wcField(r,"OPSI VARIASI 2")||"").trim().toUpperCase()===String(wc("wcBannerFinish").value||"").trim().toUpperCase())||null)
+        :wcSelectedRow();
+      const customSize=banner && String(wcField(row,"CATATAN")||"").trim()==="Ukuran diisi manual sesuai pesanan.";
       const focusMissing=(el,message)=>{
-        alert(message);
+        aliflamAlert(message);
         if(el){
           el.focus();
           el.scrollIntoView({behavior:"smooth",block:"center"});
@@ -2052,10 +2124,11 @@
       if(!Number.isInteger(qty)||qty<min){focusMissing(wc("wcQty"),`Jumlah minimal untuk produk ini ${min}.`);return;}
       if(!unit||!pcs){const target=banner?wc("wcWidth"):wc("wcVar1");focusMissing(target,"Pilihan belum lengkap atau harga belum tersedia.");return;}
       const detail=banner
-        ?`${wc("wcWidth").value}x${wc("wcHeight").value} cm · ${({P009:"FC280",P010:"FC340",P011:"KC440"})[id]} · ${wc("wcDesign").value==="own"?"Sudah punya desain":"Belum punya desain"} · ${wc("wcBannerFinish").value} · ${pcs} PCS`
+        ?`${customSize?`${wc("wcWidth").value}x${wc("wcHeight").value} cm · `:""}${[wcField(row,"OPSI VARIASI 1"),wcField(row,"OPSI VARIASI 2")].filter(Boolean).join(" · ")} · ${wc("wcDesign").value==="own"?"Sudah punya desain":"Belum punya desain"}${""}`
         :[row["OPSI VARIASI 1"],row["OPSI VARIASI 2"]].filter(Boolean).join(" / ");
-      wcCart.push({name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:banner?`${pcs} PCS total`:`${qty} unit`,unit,total:unit*pcs});
+      wcCart.push({name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs});
       wcRenderCart();
+      wc("wcSuccessPopup").classList.remove("wc-hidden");
       const nextRow=banner?null:wcSelectedRow();
       const nextMin=nextRow?Math.max(1,Number(wcField(nextRow,"MINIMAL ORDER"))||1):1;
       wc("wcQty").value=String(nextMin);
@@ -2075,8 +2148,16 @@
       wc(id).addEventListener("input",wcCalcItem);
       wc(id).addEventListener("change",wcCalcItem);
     });
+    wc("wcSuccessView").addEventListener("click",()=>{
+      wc("wcSuccessPopup").classList.add("wc-hidden");
+      wcOpenCart();
+    });
+    wc("wcSuccessAddMore").addEventListener("click",()=>{
+      wc("wcSuccessPopup").classList.add("wc-hidden");
+      wcClose();
+    });
     function wcOpenCart() {
-      if(!wcCart.length){alert("Keranjang masih kosong. Pilih produk dan tambahkan dulu.");return;}
+      if(!wcCart.length){aliflamAlert("Keranjang masih kosong. Pilih produk dan tambahkan dulu.");return;}
       wcShowPage("cart");
     }
     wc("wcCartFloat").addEventListener("click",()=>{
@@ -2088,9 +2169,8 @@
       }
       wcOpenCart();
     });
-    wc("wcViewCart").addEventListener("click",wcOpenCart);
     wc("wcContinuePay").addEventListener("click",()=>{
-      if(!wcCart.length){alert("Keranjang masih kosong.");return;}
+      if(!wcCart.length){aliflamAlert("Keranjang masih kosong.");return;}
       wcShowPage("payment");
     });
     wc("wcBackConfig").addEventListener("click",()=>wcShowPage("config"));
@@ -2104,13 +2184,12 @@
       wcPreviousBodyOverflow = "";
     }
     wc("wcClose").addEventListener("click",wcClose);
-    wc("wcBack").addEventListener("click",wcClose);
     document.getElementById("modalCheckout").addEventListener("click", function() {
       if (this.disabled || !currentDetailProduct) {
-        alert("Produk ini belum tersedia untuk pemesanan melalui website. Silakan pesan melalui Shopee atau hubungi admin.");
+        aliflamAlert("Produk ini belum tersedia untuk pemesanan melalui website. Silakan pesan melalui Shopee atau hubungi admin.");
         return;
       }
-      if(!webPricesLoaded){alert("Data harga belum berhasil dimuat. Coba muat ulang halaman.");return;}
+      if(!webPricesLoaded){aliflamAlert("Data harga belum berhasil dimuat. Coba muat ulang halaman.");return;}
       wcOpen(currentDetailProduct);
     });
 
