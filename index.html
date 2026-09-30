@@ -985,6 +985,16 @@
     .wc-qris{display:block;width:min(100%,390px);height:auto;margin:12px auto;border:1px solid #e2e8f0;border-radius:12px}
     .aliflam-alert-overlay{position:fixed;inset:0;z-index:1500;background:rgba(15,23,42,.62);display:none;align-items:center;justify-content:center;padding:36px 20px;overflow-y:auto;backdrop-filter:blur(3px)}
     .aliflam-alert-overlay.open{display:flex}
+
+    .wc-confirm-overlay{position:fixed;inset:0;z-index:10050;background:rgba(15,23,42,.58);display:none;align-items:center;justify-content:center;padding:20px}
+    .wc-confirm-overlay.open{display:flex}
+    .wc-confirm-card{width:min(100%,370px);background:#fff;border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 24px 70px rgba(15,23,42,.28)}
+    .wc-confirm-card h3{margin:0 0 10px;color:#172033;font-size:19px}
+    .wc-confirm-card p{margin:0 0 22px;color:#64748b;font-size:14px;line-height:1.55}
+    .wc-confirm-actions{display:flex;gap:10px}
+    .wc-confirm-actions button{flex:1;border:0;border-radius:11px;padding:13px;font-weight:900;cursor:pointer}
+    .wc-confirm-no{background:#e2e8f0;color:#334155}.wc-confirm-yes{background:#dc2626;color:#fff}
+
     .aliflam-alert-card{width:min(100%,370px);background:#fff;border-radius:22px;padding:28px 22px 22px;margin:28px auto;text-align:center;box-shadow:0 24px 70px rgba(15,23,42,.28);animation:aliflamPopIn .18s ease-out}
     .aliflam-alert-icon{width:54px;height:54px;border-radius:18px;margin:0 auto 14px;display:grid;place-items:center;background:#dbeafe;color:#1d4ed8;font-size:28px;font-weight:900}
     .aliflam-alert-brand{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#64748b;margin-bottom:7px}
@@ -1306,6 +1316,18 @@
       <h3 id="aliflamAlertTitle">Perhatian</h3>
       <p id="aliflamAlertMessage"></p>
       <button type="button" class="aliflam-alert-ok" id="aliflamAlertOk">MENGERTI</button>
+    </div>
+  </div>
+
+
+  <div class="wc-confirm-overlay" id="wcDeleteConfirm" aria-hidden="true">
+    <div class="wc-confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="wcConfirmTitle">
+      <h3 id="wcConfirmTitle">Konfirmasi Hapus</h3>
+      <p>Apakah yakin akan menghapus produk ini di keranjang?</p>
+      <div class="wc-confirm-actions">
+        <button type="button" class="wc-confirm-no" id="wcConfirmNo">TIDAK</button>
+        <button type="button" class="wc-confirm-yes" id="wcConfirmYes">YA</button>
+      </div>
     </div>
   </div>
 
@@ -2005,6 +2027,16 @@
     document.addEventListener("keydown",function(e){
       if(e.key==="Escape") closeAliflamAlert();
     });
+
+    wc("wcConfirmNo").addEventListener("click",()=>{const m=wc("wcDeleteConfirm");m.classList.remove("open");m.setAttribute("aria-hidden","true");});
+    wc("wcConfirmYes").addEventListener("click",()=>{
+      const m=wc("wcDeleteConfirm"),index=Number(m.dataset.index);
+      const yes=wc("wcConfirmYes");yes.disabled=true;yes.textContent="MEMPROSES...";
+      setTimeout(()=>{if(Number.isInteger(index)&&index>=0&&index<wcCart.length){wcCart.splice(index,1);wcSaveCart();wcRenderCart();}
+        m.classList.remove("open");m.setAttribute("aria-hidden","true");yes.disabled=false;yes.textContent="YA";
+        aliflamAlert("Produk ini berhasil di hapus di keranjang");
+      },250);
+    });
     let wcCurrentProduct = null;
     const WC_CART_KEY = "aliflam_web_cart_v1";
     let wcCart = [];
@@ -2232,9 +2264,10 @@
         edit.addEventListener("click",()=>wcEditItem(i));
         const del=document.createElement("button");del.type="button";del.className="wc-btn wc-delete-btn";del.textContent="HAPUS";
         del.addEventListener("click",()=>{
-          if(!confirm("Apakah yakin akan menghapus produk ini di keranjang?")) return;
-          del.disabled=true;del.textContent="MEMPROSES...";
-          setTimeout(()=>{wcCart.splice(i,1);wcSaveCart();wcRenderCart();aliflamAlert("Produk ini berhasil di hapus di keranjang");},250);
+          const modal=wc("wcDeleteConfirm");
+          modal.dataset.index=String(i);
+          modal.classList.add("open");modal.setAttribute("aria-hidden","false");
+          wc("wcConfirmNo").focus();
         });
         actions.append(edit,del);div.appendChild(actions);root.appendChild(div);
       });
