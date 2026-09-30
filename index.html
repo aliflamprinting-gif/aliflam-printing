@@ -1251,7 +1251,7 @@
           
         </div>
         <div class="wc-field"><label for="wcQty">Jumlah</label><input id="wcQty" type="number" min="1" step="1" value="1"></div>
-        <p class="wc-muted" id="wcBannerSummary">Cetak 1x ukuran 120x50 CM</p>
+        <p class="wc-muted" id="wcBannerSummary" style="display:none">Cetak 1x ukuran 120x50 CM</p>
         <div class="wc-muted" id="wcMinHint"></div>
         <div class="wc-line" id="wcUnitLine"><span>Harga satuan / PCS</span><b id="wcUnit">—</b></div>
         <div class="wc-line"><span>Subtotal item</span><b id="wcItemSubtotal">—</b></div>
@@ -2124,8 +2124,7 @@
           vals.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;el.appendChild(o);});
           el.required=vals.length>0;
           el.disabled=vals.length===0;
-          const field=el.closest(".wc-field");
-          if(field)field.style.display=vals.length?"":"none";
+          el.parentElement.style.display=vals.length?"":"none";
         };
         fill(wc("wcVar1"),k1,"variasi 1");fill(wc("wcVar2"),k2,"variasi 2");
       }
@@ -2161,12 +2160,12 @@
         const rows=wcRowsForProduct(String(wcCurrentProduct && wcCurrentProduct["ID PRODUK"] || "").trim());
         const finish=String(wc("wcBannerFinish").value||"").trim().toUpperCase();
         row=rows.find(r=>String(wcField(r,"OPSI VARIASI 2")||"").trim().toUpperCase()===finish) || null;
-        const note=String(wcField(row,"CATATAN")||"").trim();
-        const customSize=note==="Ukuran diisi manual sesuai pesanan.";
+        const note=String(wcField(row,"CATATAN")||"").trim().toLowerCase().replace(/[.!?]+$/g,"").trim();
+        const customSize=note.includes("ukuran diisi manual sesuai pesanan");
         wc("wcUnitLine").style.display=customSize?"none":"";
         const w=Number(wc("wcWidth").value),h=Number(wc("wcHeight").value);
-        wc("wcBannerSummary").style.display=customSize?"none":"";
-        wc("wcBannerSummary").textContent=`Cetak ${Number.isInteger(qty)&&qty>0?qty:1}x ukuran ${w>0?w:0}x${h>0?h:0} CM`;
+        wc("wcBannerSummary").style.display=customSize?"":"none";
+        if(customSize) wc("wcBannerSummary").textContent=`Cetak ${Number.isInteger(qty)&&qty>0?qty:1}x ukuran ${w>0?w:0}x${h>0?h:0} CM`;
         const calc=(w>0&&h>0)?wcBannerCalc(w,h):null;
         unit=row?wcNum(wcField(row,"HARGA JUAL (Rp)")):0;
         if(customSize) pcs=calc?calc.pcs*qty:0;
@@ -2179,7 +2178,6 @@
         wc("wcMinHint").textContent="";
       } else {
         wc("wcUnitLine").style.display="";
-        wc("wcBannerSummary").style.display="none";
         row=wcSelectedRow();
         unit=row?wcNum(wcField(row,"HARGA JUAL (Rp)")):0;
         const min=row?Math.max(1, Number(wcField(row,"MINIMAL ORDER"))||1):1;
