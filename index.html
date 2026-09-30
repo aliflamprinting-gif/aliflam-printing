@@ -268,6 +268,8 @@
     }
 
     .product-card {
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
       min-width: 0;
       display: flex;
       flex-direction: column;
@@ -279,6 +281,9 @@
       transition: transform .18s, box-shadow .18s;
     }
 
+    .product-card:active { transform: scale(.985); transition: transform .12s ease; }
+    .product-card:focus { outline: none; }
+    .product-card:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
     .product-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 24px rgba(15,23,42,.09);
@@ -1043,6 +1048,11 @@
       .header-contact,.header-cart{padding:7px 7px;font-size:9px}
       .header-cart span:nth-child(2){display:none}
     }
+
+    .wc-item-actions{display:flex;gap:8px;margin-top:10px}
+    .wc-item-actions .wc-btn{flex:1}
+    .wc-edit-btn{background:#16a34a;color:#fff}
+    .wc-delete-btn{background:#dc2626;color:#fff}
 </style>
 </head>
 
@@ -1996,7 +2006,11 @@
       if(e.key==="Escape") closeAliflamAlert();
     });
     let wcCurrentProduct = null;
+    const WC_CART_KEY = "aliflam_web_cart_v1";
     let wcCart = [];
+    try { const saved = JSON.parse(localStorage.getItem(WC_CART_KEY) || "[]"); if (Array.isArray(saved)) wcCart = saved; } catch(e) { wcCart = []; }
+    function wcSaveCart(){ try { localStorage.setItem(WC_CART_KEY, JSON.stringify(wcCart)); } catch(e) {} }
+    let wcEditingIndex = -1;
     let wcPreviousBodyOverflow = "";
     function wcShowPage(page) {
       wc("wcConfigPage").classList.toggle("wc-hidden",page!=="config");
@@ -2078,9 +2092,15 @@
         if(select._wcRenderCustom)select._wcRenderCustom();
       });
     }
+    function wcResetFields(){
+      ["wcWidth","wcHeight"].forEach(id=>{ if(wc(id)) wc(id).value=""; });
+      ["wcDesign","wcBannerFinish","wcVar1","wcVar2"].forEach(id=>{ if(wc(id)) wc(id).value=""; });
+      wc("wcQty").value="1";
+    }
     function wcOpen(product) {
       wcCurrentProduct = product;
-      wcCart = [];
+      wcEditingIndex = -1;
+      wcResetFields();
       const id = String(product["ID PRODUK"]||"").trim();
       const rows = wcRowsForProduct(id);
       const firstMin = Math.max(1, Number(wcField(rows[0], "MINIMAL ORDER")) || 1);
@@ -2204,16 +2224,34 @@
         const title=document.createElement("b");title.textContent=item.name;div.appendChild(title);
         const p=document.createElement("div");p.className="wc-muted";p.textContent=item.detail;div.appendChild(p);
         const line=document.createElement("div");line.className="wc-line";
-        const left=document.createElement("span");left.textContent=`${item.qtyLabel} × ${wcFmt(item.unit)}`;
+        const left=document.createElement("span");left.textContent=item.customSize?item.qtyLabel:`${item.qtyLabel} × ${wcFmt(item.unit)}`;
         const right=document.createElement("b");right.textContent=wcFmt(item.total);
         line.append(left,right);div.appendChild(line);
-        const del=document.createElement("button");del.type="button";del.className="wc-btn light";del.textContent="Hapus";
-        del.addEventListener("click",()=>{wcCart.splice(i,1);wcRenderCart();});div.appendChild(del);
-        root.appendChild(div);
+        const actions=document.createElement("div");actions.className="wc-item-actions";
+        const edit=document.createElement("button");edit.type="button";edit.className="wc-btn wc-edit-btn";edit.textContent="EDIT";
+        edit.addEventListener("click",()=>wcEditItem(i));
+        const del=document.createElement("button");del.type="button";del.className="wc-btn wc-delete-btn";del.textContent="HAPUS";
+        del.addEventListener("click",()=>{
+          if(!confirm("Apakah yakin akan menghapus produk ini di keranjang?")) return;
+          del.disabled=true;del.textContent="MEMPROSES...";
+          setTimeout(()=>{wcCart.splice(i,1);wcSaveCart();wcRenderCart();aliflamAlert("Produk ini berhasil di hapus di keranjang");},250);
+        });
+        actions.append(edit,del);div.appendChild(actions);root.appendChild(div);
       });
       const total=wcCart.reduce((sum,x)=>sum+x.total,0);
       wc("wcGrandTotal").textContent=wcFmt(total);wc("wcPayTotal").textContent=wcFmt(total);
       wc("wcCartCount").textContent=String(wcCart.length);
+    }
+    function wcEditItem(index){
+      const item=wcCart[index]; if(!item) return;
+      wcEditingIndex=index;
+      wcCurrentProduct={"ID PRODUK":item.productId,"JUDUL PRODUK":item.name};
+      wc("wcProductName").textContent=item.name;
+      wcShowPage("config"); wcRefreshFields();
+      if(item.banner){wc("wcWidth").value=item.width||"";wc("wcHeight").value=item.height||"";wc("wcDesign").value=item.design||"";wc("wcBannerFinish").value=item.finish||"";}
+      else {wc("wcVar1").value=item.var1||"";wc("wcVar2").value=item.var2||"";}
+      wc("wcQty").value=String(item.qty||1);wcSyncCustomSelects();wcCalcItem();
+      wc("wcAdd").textContent="SIMPAN & LANJUTKAN";
     }
     wc("wcAdd").addEventListener("click",()=>{
       const qty=Number(wc("wcQty").value),unit=Number(wc("wcAdd").dataset.unit),pcs=Number(wc("wcAdd").dataset.pcs);
@@ -2222,7 +2260,7 @@
       const row=banner
         ?(bannerRows.find(r=>String(wcField(r,"OPSI VARIASI 2")||"").trim().toUpperCase()===String(wc("wcBannerFinish").value||"").trim().toUpperCase())||null)
         :wcSelectedRow();
-      const customSize=banner && String(wcField(row,"CATATAN")||"").trim()==="Ukuran diisi manual sesuai pesanan.";
+      const customSize=banner && String(wcField(row,"CATATAN")||"").toLowerCase().includes("ukuran diisi manual sesuai pesanan");
       const focusMissing=(el,message)=>{
         aliflamAlert(message);
         if(el){
@@ -2252,14 +2290,17 @@
       const detail=banner
         ?`${customSize?`${wc("wcWidth").value}x${wc("wcHeight").value} cm · `:""}${[wcField(row,"OPSI VARIASI 1"),wcField(row,"OPSI VARIASI 2")].filter(Boolean).join(" · ")} · ${wc("wcDesign").value==="own"?"Sudah punya desain":"Belum punya desain"}${""}`
         :[row["OPSI VARIASI 1"],row["OPSI VARIASI 2"]].filter(Boolean).join(" / ");
-      wcCart.push({name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs});
-      wcRenderCart();
+      const item={productId:id,name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs,customSize,banner,width:banner?wc("wcWidth").value:"",height:banner?wc("wcHeight").value:"",design:banner?wc("wcDesign").value:"",finish:banner?wc("wcBannerFinish").value:"",var1:!banner?wc("wcVar1").value:"",var2:!banner?wc("wcVar2").value:"",qty};
+      if(wcEditingIndex>=0){wcCart[wcEditingIndex]=item;wcEditingIndex=-1;} else {wcCart.push(item);}
+      wcSaveCart();wcRenderCart();
       wc("wcSuccessPopup").classList.remove("wc-hidden");
       const nextRow=banner?null:wcSelectedRow();
       const nextMin=nextRow?Math.max(1,Number(wcField(nextRow,"MINIMAL ORDER"))||1):1;
+      wcResetFields();
       wc("wcQty").value=String(nextMin);
       wc("wcQty").min=String(nextMin);
-      wcCalcItem();
+      wc("wcAdd").textContent="TAMBAH KE KERANJANG";
+      wcSyncCustomSelects();wcCalcItem();
     });
     ["wcVar1","wcVar2"].forEach(id=>{
       wc(id).addEventListener("change",()=>{
