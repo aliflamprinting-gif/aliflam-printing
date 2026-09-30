@@ -963,6 +963,14 @@
     .wc-hidden{display:none!important}
     @media(max-width:560px){.web-checkout{padding:12px}.wc-card{padding:14px}.wc-grid{grid-template-columns:1fr}.wc-head h2{font-size:19px}}
 
+
+    body { padding-bottom: 76px; }
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:1000;display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid #e5e7eb;padding:7px 8px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px #0f172a0d}
+    .bottom-nav-btn{border:0;background:transparent;color:#64748b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;font-weight:800;cursor:pointer}
+    .bottom-nav-btn span{font-size:21px;line-height:1.1}
+    .bottom-nav-btn small{font-size:9px;letter-spacing:.2px}
+    .bottom-nav-btn.active{color:#123B70}
+    .app-page[hidden]{display:none!important}
   </style>
 </head>
 
@@ -987,6 +995,7 @@
   </header>
 
   <main class="container">
+    <section class="app-page" id="page-produk">
     <section class="hero">
       <div class="hero-content">
         <span class="hero-tag">KATALOG PRODUK ALIFLAM PRINTING</span>
@@ -1055,6 +1064,17 @@
       </button>
     </div>
 
+    </section>
+    <section class="app-page" id="page-beranda" hidden>
+      <section class="hero"><div class="hero-content"><span class="hero-tag">ALIFLAM PRINTING</span><h1>Selamat Datang!</h1><p>Solusi cetak untuk kebutuhan usaha, acara, dan promosi kamu.</p><div class="hero-points"><span>✓ Gratis Desain</span><span>✓ Revisi Sampai Fix</span><span>✓ Praktis & Mudah</span></div></div></section>
+      <section class="catalog"><div class="catalog-heading"><div><h2>Info &amp; Promo</h2><p>Informasi terbaru Aliflam Printing akan ditampilkan di sini.</p></div></div></section>
+    </section>
+    <section class="app-page" id="page-keranjang" hidden>
+      <section class="catalog"><div class="catalog-heading"><div><h2>Keranjang</h2><p>Lanjutkan pemesanan produk yang sudah kamu pilih.</p></div></div><button class="wc-btn secondary" id="navOpenCart" type="button">BUKA KERANJANG</button></section>
+    </section>
+    <section class="app-page" id="page-pesanan" hidden>
+      <section class="catalog"><div class="catalog-heading"><div><h2>Pesanan Saya</h2><p>Status pesanan akan tersedia setelah sistem penyimpanan pesanan dibuat.</p></div></div><div class="wc-card"><strong>Belum ada data pesanan</strong><p class="wc-muted">Fitur ini belum terhubung ke DATA ORDER WEB.</p></div></section>
+    </section>
   </main>
 
   <footer>
@@ -1252,6 +1272,13 @@
 
     </div>
   </div>
+
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <button type="button" class="bottom-nav-btn" data-page="beranda"><span>⌂</span><small>BERANDA</small></button>
+    <button type="button" class="bottom-nav-btn active" data-page="produk"><span>▦</span><small>PRODUK</small></button>
+    <button type="button" class="bottom-nav-btn" data-page="keranjang"><span>🛒</span><small>KERANJANG</small></button>
+    <button type="button" class="bottom-nav-btn" data-page="pesanan"><span>▤</span><small>PESANAN SAYA</small></button>
+  </nav>
 
   <script>
     // ==========================================
@@ -2251,6 +2278,24 @@
       }
     });
 
+
+    // NAVIGASI HALAMAN UTAMA
+    function showAppPage(pageName) {
+      document.querySelectorAll(".app-page").forEach(function(page) {
+        page.hidden = page.id !== "page-" + pageName;
+      });
+      document.querySelectorAll(".bottom-nav-btn").forEach(function(button) {
+        button.classList.toggle("active", button.dataset.page === pageName);
+      });
+      window.scrollTo(0, 0);
+    }
+    document.querySelectorAll(".bottom-nav-btn").forEach(function(button) {
+      button.addEventListener("click", function() { showAppPage(button.dataset.page); });
+    });
+    document.getElementById("navOpenCart").addEventListener("click", function() {
+      document.getElementById("wcCartFloat").click();
+    });
+    showAppPage("produk");
 
     // ==========================================
     // JALANKAN WEBSITE
