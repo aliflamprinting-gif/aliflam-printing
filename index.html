@@ -1079,6 +1079,20 @@
 .wc-status-badge{display:inline-block;padding:5px 8px;border-radius:8px;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:900}
 .wc-pay-card{border:1px solid #dbe3ef;border-radius:13px;padding:14px;margin-bottom:10px}.wc-pay-card.active{border-color:#16a34a;background:#f0fdf4}.wc-bank{font-size:18px;font-weight:900;margin:6px 0}.wc-success-big{text-align:center;padding:14px 4px}.wc-success-big .icon{font-size:48px}.wc-success-big h3{margin:8px 0;color:#172033}.wc-success-big p{color:#64748b;line-height:1.6;font-size:13px}
 .wc-wa{background:#16a34a!important}.wc-legacy-visible{display:block!important}.wc-wa:disabled{background:#9ca3af!important}
+.wc-region-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.wc-region-choice .wc-choice{min-height:100px}
+.wc-region-panel[hidden],.wc-address-form[hidden],.wc-outside-java[hidden]{display:none!important}
+.wc-outside-java{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:16px;margin-top:12px}
+.wc-outside-java h4{margin:0 0 8px;color:#9a3412;font-size:15px}
+.wc-outside-java p{margin:0 0 14px;color:#7c2d12;font-size:13px;line-height:1.6}
+.wc-shopee-list{display:grid;gap:9px}
+.wc-shopee-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid #fed7aa;border-radius:11px;background:#fff}
+.wc-shopee-item strong{font-size:13px;color:#172033}
+.wc-shopee-item a{flex:0 0 auto;padding:9px 11px;border-radius:9px;background:#ee4d2d;color:#fff;font-size:11px;font-weight:900}
+.wc-address-loading{padding:12px;border-radius:11px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:800}
+.wc-ongkir-info{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:11px;padding:11px 12px;margin:10px 0;color:#166534;font-size:12px;line-height:1.5}
+@media(max-width:560px){.wc-region-choice{grid-template-columns:1fr}}
+
 @media(max-width:560px){.wc-choice-grid{grid-template-columns:1fr}.wc-nav-actions{grid-template-columns:1fr}.checkout-step-dot{font-size:8px}.checkout-step-dot b{width:25px;height:25px}}
 
 </style>
@@ -1309,21 +1323,58 @@
       </section>
 
       <section class="wc-card wc-step-page" id="wcStep4">
-        <h3 class="wc-step-title">Alamat Pengiriman</h3><p class="wc-step-sub">Isi alamat tujuan pesanan. Biaya ongkir diisi sesuai wilayah pengiriman.</p>
-        <div class="wc-grid">
+        <h3 class="wc-step-title">Alamat Pengiriman</h3>
+        <p class="wc-step-sub">Pilih wilayah pengiriman terlebih dahulu.</p>
+
+        <div id="wcRegionPanel" class="wc-region-panel">
+          <div class="wc-muted" style="margin-bottom:8px;font-weight:900;color:#172033">Pilih wilayahmu :</div>
+          <div class="wc-region-choice">
+            <button class="wc-choice" id="wcRegionJava" type="button">
+              <b>PULAU JAWA</b>
+              <small>Gunakan data alamat Jawa dan hitung ongkir otomatis.</small>
+            </button>
+            <button class="wc-choice" id="wcRegionOutsideJava" type="button">
+              <b>BUKAN PULAU JAWA</b>
+              <small>Pesanan diarahkan ke Shopee.</small>
+            </button>
+          </div>
+        </div>
+
+        <div id="wcAddressForm" class="wc-address-form" hidden>
           <div class="wc-field"><label>Nama Penerima</label><input id="wcReceiverName" type="text"></div>
           <div class="wc-field"><label>No WA Penerima</label><input id="wcReceiverWa" type="tel"></div>
-          <div class="wc-field"><label>Provinsi</label><input id="wcProvince" type="text"></div>
-          <div class="wc-field"><label>Kota/Kabupaten</label><input id="wcCity" type="text"></div>
-          <div class="wc-field"><label>Kecamatan</label><input id="wcDistrict" type="text"></div>
-          <div class="wc-field"><label>Kelurahan</label><input id="wcVillage" type="text"></div>
-          <div class="wc-field"><label>Kode Pos</label><input id="wcPostal" type="text"></div>
-          <div class="wc-field"><label>Wilayah Ongkir</label><input id="wcShippingArea" type="text" placeholder="Contoh: DEPOK"></div>
+          <div id="wcWilayahLoading" class="wc-address-loading" hidden>Memuat data wilayah Jawa...</div>
+
+          <div class="wc-grid">
+            <div class="wc-field"><label>Provinsi</label><select id="wcProvince"><option value="">PILIH PROVINSI</option></select></div>
+            <div class="wc-field"><label>Kota/Kabupaten</label><select id="wcCity" disabled><option value="">PILIH KOTA/KABUPATEN</option></select></div>
+            <div class="wc-field"><label>Kecamatan</label><select id="wcDistrict" disabled><option value="">PILIH KECAMATAN</option></select></div>
+            <div class="wc-field"><label>Kelurahan/Desa</label><select id="wcVillage" disabled><option value="">PILIH KELURAHAN/DESA</option></select></div>
+            <div class="wc-field"><label>Kode Pos</label><input id="wcPostal" type="text" readonly></div>
+            <div class="wc-field"><label>Wilayah Ongkir</label><input id="wcShippingArea" type="text" readonly></div>
+          </div>
+
+          <div id="wcOngkirInfo" class="wc-ongkir-info" hidden></div>
+          <div class="wc-field"><label>Alamat Lengkap</label><input id="wcAddress" type="text" placeholder="Nama jalan, nomor rumah, patokan"></div>
+          <input id="wcShippingCost" type="hidden" value="0">
+
+          <div class="wc-order-summary">
+            <div class="wc-line"><span>Subtotal</span><b id="wcAddressSubtotal">Rp0</b></div>
+            <div class="wc-line"><span>Ongkir</span><b id="wcAddressOngkir">Rp0</b></div>
+            <div class="wc-line"><strong>Total</strong><strong class="wc-total" id="wcAddressTotal">Rp0</strong></div>
+          </div>
         </div>
-        <div class="wc-field"><label>Alamat Lengkap</label><input id="wcAddress" type="text" placeholder="Nama jalan, nomor rumah, patokan"></div>
-        <div class="wc-field"><label>Biaya Ongkir</label><input id="wcShippingCost" type="number" min="0" value="0"></div>
-        <div class="wc-order-summary"><div class="wc-line"><span>Subtotal</span><b id="wcAddressSubtotal">Rp0</b></div><div class="wc-line"><span>Ongkir</span><b id="wcAddressOngkir">Rp0</b></div><div class="wc-line"><strong>Total</strong><strong class="wc-total" id="wcAddressTotal">Rp0</strong></div></div>
-        <div class="wc-nav-actions"><button class="wc-btn light" id="wcStep4Back" type="button">KEMBALI</button><button class="wc-btn secondary" id="wcStep4Next" type="button">LANJUT KE PEMBAYARAN</button></div>
+
+        <div id="wcOutsideJava" class="wc-outside-java" hidden>
+          <h4>Mohon maaf 🙏</h4>
+          <p>Mohon maaf, kami belum punya data ongkir pengiriman ke luar jawa.<br>Silahkan pilih opsi pesan di Shopee.</p>
+          <div id="wcOutsideShopeeList" class="wc-shopee-list"></div>
+        </div>
+
+        <div class="wc-nav-actions">
+          <button class="wc-btn light" id="wcStep4Back" type="button">KEMBALI</button>
+          <button class="wc-btn secondary" id="wcStep4Next" type="button">LANJUT KE PEMBAYARAN</button>
+        </div>
       </section>
 
       <section class="wc-card wc-step-page" id="wcStep5">
@@ -2853,6 +2904,12 @@
       let checkoutBuyerId = '';
       let paymentMethod = 'QRIS';
       let designData = [];
+      let wilayahJawaData = [];
+      let wilayahJawaLoaded = false;
+      let wilayahJawaLoading = false;
+      let selectedShippingRegion = '';
+      let pendingBuyerAddress = null;
+      let lastShippingResult = null;
       const ORDER_HISTORY_KEY = 'aliflam_web_order_history_v1';
 
       function postCheckout(payload){
@@ -2870,12 +2927,13 @@
         for(let i=1;i<=7;i++) $('wcStep'+i).classList.toggle('active',i===n);
         [...$('wcStepDots').children].forEach((el,i)=>{el.classList.toggle('active',i+1===n);el.classList.toggle('done',i+1<n)});
         checkout.querySelector('.wc-wrap').scrollTop=0;
+        if(n===4) prepareAddressStep();
       }
       function cartSubtotal(){ return wcCart.reduce((a,x)=>a+(Number(x.total)||0),0); }
       function openCheckout7(){
         if(!wcCart.length){ wcClose(); closeProductDetail(); showAppPage('produk'); aliflamAlert('Keranjang masih kosong. Pilih produk dan tambahkan dulu.'); return; }
         checkout.classList.add('open'); checkout.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
-        renderCheckoutCart(); renderDesign(); setStep(1);
+        renderCheckoutCart(); renderDesign(); selectedShippingRegion=''; pendingBuyerAddress=null; lastShippingResult=null; prepareAddressStep(); setStep(1);
       }
       function closeCheckout7(){ checkout.classList.remove('open'); checkout.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
       function renderCheckoutCart(){
@@ -2920,10 +2978,257 @@
         for(let i=0;i<designData.length;i++) if(!designData[i].status) return false;
         wcCart.forEach((item,i)=>{item.designStatus=designData[i].status;item.designRequest=designData[i].request.trim();}); wcSaveCart(); return true;
       }
+      function normalizeRegionText(v){
+        return String(v||'').trim().toUpperCase();
+      }
+
+      function resetAddressSelect(id, placeholder, disabled){
+        const el=$(id);
+        if(!el)return;
+        el.innerHTML='';
+        const opt=document.createElement('option');
+        opt.value='';
+        opt.textContent=placeholder;
+        el.appendChild(opt);
+        el.value='';
+        el.disabled=!!disabled;
+        if(el._wcRenderCustom)el._wcRenderCustom();
+      }
+
+      function fillSelectOptions(id, rows, valueKey, labelKey, placeholder){
+        const el=$(id);
+        if(!el)return;
+        el.innerHTML='';
+        const first=document.createElement('option');
+        first.value='';
+        first.textContent=placeholder;
+        el.appendChild(first);
+        const seen=new Set();
+        rows.forEach(row=>{
+          const value=String(row[valueKey]||'').trim();
+          const label=String(row[labelKey]||'').trim();
+          if(!value || seen.has(value))return;
+          seen.add(value);
+          const opt=document.createElement('option');
+          opt.value=value;
+          opt.textContent=label;
+          el.appendChild(opt);
+        });
+        el.disabled=false;
+        if(el._wcRenderCustom)el._wcRenderCustom();
+      }
+
+      async function loadWilayahJawa(){
+        if(wilayahJawaLoaded)return true;
+        if(wilayahJawaLoading)return false;
+        wilayahJawaLoading=true;
+        $('wcWilayahLoading').hidden=false;
+        try{
+          const response=await fetch(API_URL+'?action=wilayahJawa',{method:'GET',cache:'no-store'});
+          if(!response.ok)throw new Error('Server API wilayah merespons '+response.status);
+          const data=await response.json();
+          if(!data.success || !Array.isArray(data.data))throw new Error('Format data API wilayah tidak sesuai.');
+          wilayahJawaData=data.data;
+          wilayahJawaLoaded=true;
+          fillSelectOptions('wcProvince',wilayahJawaData,'id_provinsi','provinsi','PILIH PROVINSI');
+          return true;
+        }catch(e){
+          wilayahJawaLoaded=false;
+          wilayahJawaData=[];
+          aliflamAlert('Gagal memuat data wilayah Jawa: '+e.message);
+          return false;
+        }finally{
+          wilayahJawaLoading=false;
+          $('wcWilayahLoading').hidden=true;
+        }
+      }
+
+      function showJavaAddressForm(){
+        selectedShippingRegion='JAVA';
+        $('wcRegionPanel').hidden=true;
+        $('wcOutsideJava').hidden=true;
+        $('wcAddressForm').hidden=false;
+        $('wcRegionJava').classList.add('active');
+        $('wcRegionOutsideJava').classList.remove('active');
+        loadWilayahJawa().then(ok=>{
+          if(ok) applyPendingBuyerAddress();
+        });
+      }
+
+      function renderOutsideJavaShopee(){
+        const root=$('wcOutsideShopeeList');
+        if(!root)return;
+        root.innerHTML='';
+        const seen=new Set();
+        wcCart.forEach(item=>{
+          const productId=String(item.id||item.productId||'').trim();
+          const product=(typeof allProducts!=='undefined'?allProducts:[]).find(p=>String(p['ID PRODUK']||'').trim()===productId);
+          const name=String((product&&product['JUDUL PRODUK'])||item.name||productId||'Produk Aliflam').trim();
+          const link=String((product&&product['LINK SHOPEE'])||'').trim();
+          const key=productId+'|'+name;
+          if(seen.has(key))return;
+          seen.add(key);
+          const row=document.createElement('div');
+          row.className='wc-shopee-item';
+          const label=document.createElement('strong');
+          label.textContent=name;
+          row.appendChild(label);
+          if(link){
+            const a=document.createElement('a');
+            a.href=link;
+            a.target='_blank';
+            a.rel='noopener noreferrer';
+            a.textContent='LINK PRODUK';
+            row.appendChild(a);
+          }else{
+            const span=document.createElement('span');
+            span.textContent='Link Shopee belum tersedia';
+            span.style.cssText='font-size:11px;color:#94a3b8;font-weight:700';
+            row.appendChild(span);
+          }
+          root.appendChild(row);
+        });
+        if(!root.children.length)root.innerHTML='<div class="wc-muted">Tidak ada produk di keranjang.</div>';
+      }
+
+      function showOutsideJava(){
+        selectedShippingRegion='OUTSIDE_JAVA';
+        $('wcRegionPanel').hidden=true;
+        $('wcAddressForm').hidden=true;
+        $('wcOutsideJava').hidden=false;
+        $('wcRegionJava').classList.remove('active');
+        $('wcRegionOutsideJava').classList.add('active');
+        $('wcStep4Next').hidden=true;
+        renderOutsideJavaShopee();
+      }
+
+      function prepareAddressStep(){
+        $('wcStep4Next').hidden=selectedShippingRegion!=='JAVA';
+        if(!selectedShippingRegion){
+          $('wcRegionPanel').hidden=false;
+          $('wcAddressForm').hidden=true;
+          $('wcOutsideJava').hidden=true;
+          $('wcStep4Next').hidden=false;
+          return;
+        }
+        if(selectedShippingRegion==='JAVA'){
+          $('wcRegionPanel').hidden=true;
+          $('wcAddressForm').hidden=false;
+          $('wcOutsideJava').hidden=true;
+          loadWilayahJawa().then(ok=>{if(ok)applyPendingBuyerAddress();});
+        }else{
+          showOutsideJava();
+        }
+      }
+
+      function applyPendingBuyerAddress(){
+        const d=pendingBuyerAddress;
+        if(!d || !wilayahJawaLoaded || selectedShippingRegion!=='JAVA')return;
+        const province=wilayahJawaData.find(r=>normalizeRegionText(r.provinsi)===normalizeRegionText(d.provinsi));
+        if(province) $('wcProvince').value=province.id_provinsi;
+        if(province)populateCities();
+        const city=wilayahJawaData.find(r=>String(r.id_provinsi||'')===String($('wcProvince').value||'') && normalizeRegionText(r.kabupaten_kota)===normalizeRegionText(d.kota));
+        if(city)$('wcCity').value=city.id_kabupaten_kota;
+        if(city)populateDistricts();
+        const district=wilayahJawaData.find(r=>String(r.id_kecamatan||'')===String($('wcDistrict').value||'') && normalizeRegionText(r.kecamatan)===normalizeRegionText(d.kecamatan));
+        if(district)$('wcDistrict').value=district.id_kecamatan;
+        if(district)populateVillages();
+        const village=wilayahJawaData.find(r=>String(r.id_desa||'')===String($('wcVillage').value||'') && normalizeRegionText(r.desa_kelurahan)===normalizeRegionText(d.kelurahan));
+        if(village){
+          $('wcVillage').value=village.id_desa;
+          $('wcPostal').value=String(village.kode_pos||'');
+        }
+        ['wcProvince','wcCity','wcDistrict','wcVillage'].forEach(id=>{if($(id)._wcRenderCustom)$(id)._wcRenderCustom();});
+        $('wcAddress').value=d.alamat||'';
+        $('wcReceiverName').value=d.nama||$('wcReceiverName').value;
+        $('wcReceiverWa').value=formatWa(d.noWhatsapp||$('wcReceiverWa').value);
+        calculateShipping();
+      }
+
+      function populateCities(){
+        const pid=$('wcProvince').value;
+        resetAddressSelect('wcCity','PILIH KOTA/KABUPATEN',!pid);
+        resetAddressSelect('wcDistrict','PILIH KECAMATAN',true);
+        resetAddressSelect('wcVillage','PILIH KELURAHAN/DESA',true);
+        $('wcPostal').value='';
+        if(!pid)return;
+        fillSelectOptions('wcCity',wilayahJawaData.filter(r=>String(r.id_provinsi||'')===String(pid)),'id_kabupaten_kota','kabupaten_kota','PILIH KOTA/KABUPATEN');
+      }
+
+      function populateDistricts(){
+        const cid=$('wcCity').value;
+        resetAddressSelect('wcDistrict','PILIH KECAMATAN',!cid);
+        resetAddressSelect('wcVillage','PILIH KELURAHAN/DESA',true);
+        $('wcPostal').value='';
+        if(!cid)return;
+        fillSelectOptions('wcDistrict',wilayahJawaData.filter(r=>String(r.id_kabupaten_kota||'')===String(cid)),'id_kecamatan','kecamatan','PILIH KECAMATAN');
+      }
+
+      function populateVillages(){
+        const did=$('wcDistrict').value;
+        resetAddressSelect('wcVillage','PILIH KELURAHAN/DESA',!did);
+        $('wcPostal').value='';
+        if(!did)return;
+        fillSelectOptions('wcVillage',wilayahJawaData.filter(r=>String(r.id_kecamatan||'')===String(did)),'id_desa','desa_kelurahan','PILIH KELURAHAN/DESA');
+      }
+
+      function onVillageChanged(){
+        const vid=$('wcVillage').value;
+        const row=wilayahJawaData.find(r=>String(r.id_desa||'')===String(vid));
+        $('wcPostal').value=row?String(row.kode_pos||''):'';
+        calculateShipping();
+      }
+
+      async function calculateShipping(){
+        if(selectedShippingRegion!=='JAVA')return;
+        const provinceId=$('wcProvince').value;
+        const cityId=$('wcCity').value;
+        if(!provinceId || !cityId){
+          $('wcShippingCost').value='0';
+          $('wcShippingArea').value='';
+          addressTotals();
+          return;
+        }
+        const provinceRow=wilayahJawaData.find(r=>String(r.id_provinsi||'')===String(provinceId));
+        const cityRow=wilayahJawaData.find(r=>String(r.id_kabupaten_kota||'')===String(cityId));
+        if(!provinceRow || !cityRow)return;
+        try{
+          const result=await postCheckout({
+            action:'calculateOngkir',
+            provinsi:provinceRow.provinsi,
+            kota:cityRow.kabupaten_kota,
+            items:wcCart.map(item=>({
+              idProduk:item.id||item.productId||'',
+              kodeProduk:item.code||item.var1||'',
+              qty:item.customSize?(item.pcs||1)*item.qty:item.qty
+            }))
+          });
+          if(!result.success)throw new Error(result.message||'Gagal menghitung ongkir');
+          lastShippingResult=result;
+          $('wcShippingCost').value=String(result.ongkir||0);
+          $('wcShippingArea').value=result.wilayahOngkir||'';
+          $('wcOngkirInfo').hidden=false;
+          $('wcOngkirInfo').textContent='Berat '+Number(result.totalBeratGram||0).toLocaleString('id-ID')+' gram → '+result.beratTagihanKg+' KG · '+(result.wilayahOngkir||'')+' · '+money(result.ongkir);
+          addressTotals();
+        }catch(e){
+          lastShippingResult=null;
+          $('wcShippingCost').value='0';
+          $('wcShippingArea').value='';
+          addressTotals();
+          aliflamAlert('Gagal menghitung ongkir: '+e.message);
+        }
+      }
+
       function fillBuyerFromFound(d){
-        checkoutBuyerId=d.pembeliId||''; $('wcBuyerName').value=d.nama||''; $('wcBuyerWa').value=formatWa(d.noWhatsapp||'');
-        $('wcReceiverName').value=d.nama||''; $('wcReceiverWa').value=formatWa(d.noWhatsapp||''); $('wcAddress').value=d.alamat||''; $('wcProvince').value=d.provinsi||''; $('wcCity').value=d.kota||''; $('wcDistrict').value=d.kecamatan||''; $('wcVillage').value=d.kelurahan||''; $('wcPostal').value=d.kodePos||'';
+        checkoutBuyerId=d.pembeliId||'';
+        pendingBuyerAddress=d;
+        $('wcBuyerName').value=d.nama||'';
+        $('wcBuyerWa').value=formatWa(d.noWhatsapp||'');
+        $('wcReceiverName').value=d.nama||'';
+        $('wcReceiverWa').value=formatWa(d.noWhatsapp||'');
+        $('wcAddress').value=d.alamat||'';
         $('wcBuyerStatus').textContent='Data pembeli ditemukan: '+d.pembeliId;
+        if(selectedShippingRegion==='JAVA') applyPendingBuyerAddress();
       }
       async function prepareBuyer(){
         const name=$('wcBuyerName').value.trim(), wa=normalizeWa($('wcBuyerWa').value);
@@ -2946,14 +3251,15 @@
       receiverWaInput.addEventListener('input',()=>applyWaFormat(receiverWaInput));
       receiverWaInput.addEventListener('paste',()=>setTimeout(()=>applyWaFormat(receiverWaInput),0));
       receiverWaInput.addEventListener('blur',()=>applyWaFormat(receiverWaInput));
-      function validateAddress(){const ids=['wcReceiverName','wcReceiverWa','wcProvince','wcCity','wcDistrict','wcVillage','wcPostal','wcShippingArea','wcAddress'];for(const id of ids)if(!$(id).value.trim()){aliflamAlert('Lengkapi data alamat pengiriman terlebih dahulu.');return false;}return true;}
+      function validateAddress(){if(selectedShippingRegion!=='JAVA'){aliflamAlert('Pilih PULAU JAWA untuk melanjutkan checkout website.');return false;}const ids=['wcReceiverName','wcReceiverWa','wcProvince','wcCity','wcDistrict','wcVillage','wcPostal','wcShippingArea','wcAddress'];for(const id of ids)if(!$(id).value.trim()){aliflamAlert('Lengkapi data alamat pengiriman terlebih dahulu.');return false;}return true;}
       function catatanDesain(item){ if(item.designStatus==='BELUM PUNYA DESAIN') return 'STATUS DESAIN: BELUM PUNYA DESAIN\n\nRequest: '+item.designRequest; return 'STATUS DESAIN: SUDAH PUNYA DESAIN'; }
       function waMessage(){
         let out='Halo Aliflam, saya ingin konfirmasi pesanan:\n\n'+(checkoutOrder?.nomorPesanan||'');
         wcCart.forEach(item=>{out+='\n\n'+item.name+'\n'+(item.var1||'')+(item.var2?'\n'+item.var2:'')+(item.width&&item.height?'\nUkuran: '+item.width+'x'+item.height+' CM':'')+'\n'+item.qtyLabel+'\n\nCatatan Desain:\n'+catatanDesain(item);});
         return out;
       }
-      function openWa(){window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(waMessage()),'_blank','noopener');}
+      let checkoutWaMessage='';
+      function openWa(){window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(checkoutWaMessage||waMessage()),'_blank','noopener');}
       function saveHistory(orderId){let h=[];try{h=JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY)||'[]')}catch(e){};if(!h.includes(orderId))h.unshift(orderId);localStorage.setItem(ORDER_HISTORY_KEY,JSON.stringify(h.slice(0,50)));}
       async function createFullOrder(){
         const buyerName=$('wcBuyerName').value.trim(), buyerWa=normalizeWa($('wcBuyerWa').value), addrOk=validateAddress(); if(!addrOk)return;
@@ -2962,13 +3268,13 @@
           let buyerId=checkoutBuyerId;
           if(!buyerId){const c=await postCheckout({action:'createPembeli',nama:buyerName,noWhatsapp:buyerWa,alamat:$('wcAddress').value.trim(),provinsi:$('wcProvince').value.trim(),kota:$('wcCity').value.trim(),kecamatan:$('wcDistrict').value.trim(),kelurahan:$('wcVillage').value.trim(),kodePos:$('wcPostal').value.trim()});if(!c.success)throw new Error(c.message||'Gagal membuat pembeli');buyerId=c.pembeliId;checkoutBuyerId=buyerId;}
           else {const u=await postCheckout({action:'updatePembeli',pembeliId:buyerId,nama:buyerName,noWhatsapp:buyerWa,alamat:$('wcAddress').value.trim(),provinsi:$('wcProvince').value.trim(),kota:$('wcCity').value.trim(),kecamatan:$('wcDistrict').value.trim(),kelurahan:$('wcVillage').value.trim(),kodePos:$('wcPostal').value.trim()});if(!u.success)throw new Error(u.message||'Gagal memperbarui pembeli');}
-          const order=await postCheckout({action:'createOrder',pembeliId:buyerId,subtotal:totals.sub,ongkir:totals.ong,total:totals.total,totalBerat:0,statusPembayaran:'MENUNGGU PEMBAYARAN',statusPesanan:'BELUM DI PROSES'});if(!order.success)throw new Error(order.message||'Gagal membuat order');
+          const order=await postCheckout({action:'createOrder',pembeliId:buyerId,subtotal:totals.sub,ongkir:totals.ong,total:totals.total,totalBerat:Number(lastShippingResult?.totalBeratGram||0),statusPembayaran:'MENUNGGU PEMBAYARAN',statusPesanan:'BELUM DI PROSES'});if(!order.success)throw new Error(order.message||'Gagal membuat order');
           checkoutOrder=order;
           const items=wcCart.map(item=>({idProduk:item.id||'',namaProduk:item.name||'',kodeProduk:item.code||item.var1||'',variasi1:item.var1||'',variasi2:item.var2||'',ukuran:item.width&&item.height?(item.width+'x'+item.height+' CM'):(item.size||''),qty:item.customSize?(item.pcs||1)*item.qty:item.qty,hargaSatuan:item.unit,totalItem:item.total,catatanDesain:catatanDesain(item)}));
           const ir=await postCheckout({action:'saveOrderItems',orderId:order.orderId,items});if(!ir.success)throw new Error(ir.message||'Gagal menyimpan item');
           const ar=await postCheckout({action:'saveOrderAddress',orderId:order.orderId,namaPenerima:$('wcReceiverName').value.trim(),noWaPenerima:normalizeWa($('wcReceiverWa').value),provinsi:$('wcProvince').value.trim(),kota:$('wcCity').value.trim(),kecamatan:$('wcDistrict').value.trim(),kelurahan:$('wcVillage').value.trim(),kodePos:$('wcPostal').value.trim(),alamatLengkap:$('wcAddress').value.trim(),wilayahOngkir:$('wcShippingArea').value.trim(),biayaOngkir:totals.ong});if(!ar.success)throw new Error(ar.message||'Gagal menyimpan alamat');
           const pr=await postCheckout({action:'createPayment',orderId:order.orderId,metodePembayaran:paymentMethod,jumlah:totals.total,status:'MENUNGGU PEMBAYARAN',catatanAdmin:''});if(!pr.success)throw new Error(pr.message||'Gagal membuat pembayaran');
-          saveHistory(order.orderId); $('wcConfirmNumber').textContent=order.nomorPesanan;$('wcConfirmTotal').textContent=money(totals.total);$('wcWaPreview').textContent=waMessage();$('wcSuccessNumber').textContent=order.nomorPesanan;localStorage.setItem('aliflam_last_buyer_wa',buyerWa);wcSaveCart();setStep(6);
+          saveHistory(order.orderId); checkoutWaMessage=waMessage(); $('wcConfirmNumber').textContent=order.nomorPesanan;$('wcConfirmTotal').textContent=money(totals.total);$('wcWaPreview').textContent=checkoutWaMessage;$('wcSuccessNumber').textContent=order.nomorPesanan;localStorage.setItem('aliflam_last_buyer_wa',buyerWa);wcCart=[];wcSaveCart();wcSyncCartCount();renderCheckoutCart();renderDesign();setStep(6);
         }catch(e){aliflamAlert('Pesanan belum berhasil dibuat. '+e.message);}finally{btn.disabled=false;btn.textContent='BUAT PESANAN';}
       }
       async function renderMyOrders(){
@@ -3005,7 +3311,16 @@
       };
       $('wcStep2Back').onclick=()=>setStep(1);$('wcStep2Next').onclick=()=>{if(!validateDesign()){aliflamAlert('Pilih status desain terlebih dahulu.');return;}setStep(3)};
       $('wcStep3Back').onclick=()=>setStep(2);$('wcStep3Next').onclick=async()=>{if(await prepareBuyer())setStep(4)};
-      $('wcStep4Back').onclick=()=>setStep(3);$('wcStep4Next').onclick=()=>{if(validateAddress()){addressTotals();setStep(5)}};
+      $('wcStep4Back').onclick=()=>{selectedShippingRegion='';prepareAddressStep();setStep(3);};
+      $('wcStep4Next').onclick=()=>{if(validateAddress()){addressTotals();setStep(5)}};
+      $('wcRegionJava').onclick=showJavaAddressForm;
+      $('wcRegionOutsideJava').onclick=showOutsideJava;
+      $('wcProvince').addEventListener('change',()=>{populateCities();calculateShipping();});
+      $('wcCity').addEventListener('change',()=>{populateDistricts();calculateShipping();});
+      $('wcDistrict').addEventListener('change',()=>{populateVillages();});
+      $('wcVillage').addEventListener('change',onVillageChanged);
+      prepareAddressStep();
+      wcSyncCustomSelects();
       $('wcStep5Back').onclick=()=>setStep(4);$('wcCreateOrder').onclick=createFullOrder;$('wcConfirmWa').onclick=openWa;$('wcStep6Done').onclick=()=>setStep(7);$('wcSuccessWa').onclick=openWa;
       $('wcSuccessOrders').onclick=()=>{closeCheckout7();showAppPage('pesanan');renderMyOrders()};$('wcSuccessClose').onclick=closeCheckout7;
       ['wcShippingCost'].forEach(id=>$(id).addEventListener('input',addressTotals));
