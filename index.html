@@ -2176,7 +2176,8 @@
           vals.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;el.appendChild(o);});
           el.required=vals.length>0;
           el.disabled=vals.length===0;
-          el.parentElement.style.display=vals.length?"":"none";
+          const field=el.closest(".wc-field") || el.parentElement;
+          field.style.display=vals.length>0?"":"none";
         };
         fill(wc("wcVar1"),k1,"variasi 1");fill(wc("wcVar2"),k2,"variasi 2");
       }
