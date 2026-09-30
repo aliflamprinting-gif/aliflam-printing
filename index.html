@@ -1297,7 +1297,7 @@
       <section class="wc-card wc-step-page" id="wcStep2">
         <h3 class="wc-step-title">Desain</h3><p class="wc-step-sub">Pilih status desain untuk setiap produk. File desain dikirim melalui WhatsApp/email dengan nomor pesanan.</p>
         <div id="wcDesignList"></div>
-        <div class="wc-nav-actions"><button class="wc-btn light" id="wcStep2Back" type="button">KEMBALI</button><button class="wc-btn secondary" id="wcStep2Next" type="button">LANJUT KE DATA PEMBELI</button></div>
+        <div class="wc-nav-actions"><button class="wc-btn light" id="wcStep2Back" type="button">KEMBALI</button><button class="wc-btn secondary" id="wcStep2Next" type="button">LANJUTKAN</button></div>
       </section>
 
       <section class="wc-card wc-step-page" id="wcStep3">
@@ -2085,17 +2085,50 @@
     wc("wcConfirmNo").addEventListener("click",()=>{const m=wc("wcDeleteConfirm");m.classList.remove("open");m.setAttribute("aria-hidden","true");});
     wc("wcConfirmYes").addEventListener("click",()=>{
       const m=wc("wcDeleteConfirm"),index=Number(m.dataset.index);
-      const yes=wc("wcConfirmYes");yes.disabled=true;yes.textContent="MEMPROSES...";
-      setTimeout(()=>{if(Number.isInteger(index)&&index>=0&&index<wcCart.length){wcCart.splice(index,1);wcSaveCart();wcRenderCart();}
-        m.classList.remove("open");m.setAttribute("aria-hidden","true");yes.disabled=false;yes.textContent="YA";
-        aliflamAlert("Produk ini berhasil di hapus di keranjang");
-      },250);
+      const yes=wc("wcConfirmYes");
+      yes.disabled=true;
+      yes.textContent="MEMPROSES...";
+
+      // Beri waktu loading supaya aksi hapus terasa jelas, lalu langsung sinkronkan UI.
+      setTimeout(()=>{
+        let deleted=false;
+        if(Number.isInteger(index)&&index>=0&&index<wcCart.length){
+          wcCart.splice(index,1);
+          wcSaveCart();
+          wcRenderCart();
+          deleted=true;
+
+          // Sinkronkan keranjang checkout 7-step secara realtime.
+          if(typeof window.__aliflamCheckoutCartChanged === "function") {
+            window.__aliflamCheckoutCartChanged();
+          }
+        }
+
+        m.classList.remove("open");
+        m.setAttribute("aria-hidden","true");
+        yes.disabled=false;
+        yes.textContent="YA";
+
+        if(deleted){
+          aliflamAlert("Produk berhasil dihapus dari keranjang.");
+        }
+      },650);
     });
     let wcCurrentProduct = null;
     const WC_CART_KEY = "aliflam_web_cart_v1";
     let wcCart = [];
     try { const saved = JSON.parse(localStorage.getItem(WC_CART_KEY) || "[]"); if (Array.isArray(saved)) wcCart = saved; } catch(e) { wcCart = []; }
     function wcSaveCart(){ try { localStorage.setItem(WC_CART_KEY, JSON.stringify(wcCart)); } catch(e) {} }
+
+    // Sinkronkan badge keranjang dengan isi cart yang tersimpan.
+    function wcSyncCartCount(){
+      const badge = document.getElementById("wcCartCount");
+      if(badge) badge.textContent = String(wcCart.length);
+    }
+
+    // Saat halaman dibuka/reload, badge langsung membaca cart yang sudah tersimpan.
+    wcSyncCartCount();
+
     let wcEditingIndex = -1;
     let wcPreviousBodyOverflow = "";
     function wcShowPage(page) {
@@ -2335,7 +2368,7 @@
       });
       const total=wcCart.reduce((sum,x)=>sum+x.total,0);
       wc("wcGrandTotal").textContent=wcFmt(total);wc("wcPayTotal").textContent=wcFmt(total);
-      wc("wcCartCount").textContent=String(wcCart.length);
+      wcSyncCartCount();
     }
     function wcEditItem(index){
       const item=wcCart[index]; if(!item) return;
@@ -2387,7 +2420,6 @@
       const item={productId:id,name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs,customSize,banner,width:banner?wc("wcWidth").value:"",height:banner?wc("wcHeight").value:"",design:banner&&!customSize?wc("wcDesign").value:"",finish:banner?wc("wcBannerFinish").value:"",var1:!banner?wc("wcVar1").value:"",var2:!banner?wc("wcVar2").value:"",qty};
       if(wcEditingIndex>=0){wcCart[wcEditingIndex]=item;wcEditingIndex=-1;} else {wcCart.push(item);}
       wcSaveCart();wcRenderCart();
-      wc("wcSuccessPopup").classList.remove("wc-hidden");
       const nextRow=banner?null:wcSelectedRow();
       const nextMin=nextRow?Math.max(1,Number(wcField(nextRow,"MINIMAL ORDER"))||1):1;
       wcResetFields();
@@ -2828,6 +2860,10 @@
       }
       function money(n){ return 'Rp'+Math.round(Number(n)||0).toLocaleString('id-ID'); }
       function normalizeWa(v){ let x=String(v||'').replace(/\D/g,''); if(x.startsWith('62')) return '0'+x.slice(2); if(x.startsWith('8')) return '0'+x; return x; }
+      function formatWa(v){
+        const x=normalizeWa(v).slice(0,13);
+        return x.replace(/(.{4})(?=.)/g,'$1-');
+      }
       function stepNames(){ return ['Keranjang','Desain','Pembeli','Alamat','Bayar','Konfirmasi','Berhasil']; }
       function setStep(n){
         checkoutStep=n;
@@ -2852,12 +2888,16 @@
           const line=document.createElement('div'); line.className='wc-line'; line.innerHTML='<span>Subtotal item</span><b>'+money(item.total)+'</b>'; d.appendChild(line);
           const actions=document.createElement('div'); actions.className='wc-item-actions';
           const edit=document.createElement('button'); edit.type='button'; edit.className='wc-btn wc-edit-btn'; edit.textContent='EDIT';
-          edit.onclick=()=>{ closeCheckout7(); wcEditItem(i); $('wcLegacyCompat').classList.add('wc-legacy-visible'); $('wcStepDots').style.display='none'; };
+          edit.onclick=()=>{
+            wcEditItem(i);
+            if(typeof window.__aliflamCheckoutShowConfig==='function') window.__aliflamCheckoutShowConfig();
+          };
           const del=document.createElement('button'); del.type='button'; del.className='wc-btn wc-delete-btn'; del.textContent='HAPUS';
           del.onclick=()=>{ const modal=wc('wcDeleteConfirm'); modal.dataset.index=String(i); modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); wc('wcConfirmNo').focus(); };
           actions.append(edit,del); d.appendChild(actions); root.appendChild(d);
         });
         $('wcCheckoutSubtotal').textContent=money(cartSubtotal());
+        if(typeof wcSyncCartCount === 'function') wcSyncCartCount();
       }
       function renderDesign(){
         const root=$('wcDesignList'); root.innerHTML='';
@@ -2877,12 +2917,12 @@
         });
       }
       function validateDesign(){
-        for(let i=0;i<designData.length;i++) if(!designData[i].status || (designData[i].status==='BELUM PUNYA DESAIN' && !designData[i].request.trim())) return false;
+        for(let i=0;i<designData.length;i++) if(!designData[i].status) return false;
         wcCart.forEach((item,i)=>{item.designStatus=designData[i].status;item.designRequest=designData[i].request.trim();}); wcSaveCart(); return true;
       }
       function fillBuyerFromFound(d){
-        checkoutBuyerId=d.pembeliId||''; $('wcBuyerName').value=d.nama||''; $('wcBuyerWa').value=d.noWhatsapp||'';
-        $('wcReceiverName').value=d.nama||''; $('wcReceiverWa').value=d.noWhatsapp||''; $('wcAddress').value=d.alamat||''; $('wcProvince').value=d.provinsi||''; $('wcCity').value=d.kota||''; $('wcDistrict').value=d.kecamatan||''; $('wcVillage').value=d.kelurahan||''; $('wcPostal').value=d.kodePos||'';
+        checkoutBuyerId=d.pembeliId||''; $('wcBuyerName').value=d.nama||''; $('wcBuyerWa').value=formatWa(d.noWhatsapp||'');
+        $('wcReceiverName').value=d.nama||''; $('wcReceiverWa').value=formatWa(d.noWhatsapp||''); $('wcAddress').value=d.alamat||''; $('wcProvince').value=d.provinsi||''; $('wcCity').value=d.kota||''; $('wcDistrict').value=d.kecamatan||''; $('wcVillage').value=d.kelurahan||''; $('wcPostal').value=d.kodePos||'';
         $('wcBuyerStatus').textContent='Data pembeli ditemukan: '+d.pembeliId;
       }
       async function prepareBuyer(){
@@ -2897,6 +2937,15 @@
         }catch(e){$('wcBuyerStatus').textContent='';aliflamAlert('Gagal memeriksa data pembeli: '+e.message);return false;}
       }
       function addressTotals(){const sub=cartSubtotal(), ong=Math.max(0,Number($('wcShippingCost').value)||0), total=sub+ong; $('wcAddressSubtotal').textContent=money(sub);$('wcAddressOngkir').textContent=money(ong);$('wcAddressTotal').textContent=money(total);$('wcPaySubtotal').textContent=money(sub);$('wcPayOngkir').textContent=money(ong);$('wcPayGrandTotal').textContent=money(total);return {sub,ong,total};}
+      const buyerWaInput=$('wcBuyerWa');
+      const receiverWaInput=$('wcReceiverWa');
+      function applyWaFormat(el){ if(!el)return; el.value=formatWa(el.value); }
+      buyerWaInput.addEventListener('input',()=>applyWaFormat(buyerWaInput));
+      buyerWaInput.addEventListener('paste',()=>setTimeout(()=>applyWaFormat(buyerWaInput),0));
+      buyerWaInput.addEventListener('blur',()=>applyWaFormat(buyerWaInput));
+      receiverWaInput.addEventListener('input',()=>applyWaFormat(receiverWaInput));
+      receiverWaInput.addEventListener('paste',()=>setTimeout(()=>applyWaFormat(receiverWaInput),0));
+      receiverWaInput.addEventListener('blur',()=>applyWaFormat(receiverWaInput));
       function validateAddress(){const ids=['wcReceiverName','wcReceiverWa','wcProvince','wcCity','wcDistrict','wcVillage','wcPostal','wcShippingArea','wcAddress'];for(const id of ids)if(!$(id).value.trim()){aliflamAlert('Lengkapi data alamat pengiriman terlebih dahulu.');return false;}return true;}
       function catatanDesain(item){ if(item.designStatus==='BELUM PUNYA DESAIN') return 'STATUS DESAIN: BELUM PUNYA DESAIN\n\nRequest: '+item.designRequest; return 'STATUS DESAIN: SUDAH PUNYA DESAIN'; }
       function waMessage(){
@@ -2930,18 +2979,83 @@
 
       // Ganti handler tombol lama dengan handler checkout 7 step.
       ['wcCartFloat','wcClose','wcStep1Next','wcStep2Back','wcStep2Next','wcStep3Back','wcStep3Next','wcStep4Back','wcStep4Next','wcStep5Back','wcCreateOrder','wcConfirmWa','wcStep6Done','wcSuccessWa','wcSuccessOrders','wcSuccessClose'].forEach(id=>{const el=$(id);if(!el)return;const clone=el.cloneNode(true);el.replaceWith(clone);});
+      // Pastikan badge tetap benar setiap kali checkout 7-step dibuka.
+      wcSyncCartCount();
+
+      // Dipanggil oleh aksi tambah/edit/hapus pada cart lama agar tampilan checkout 7-step ikut realtime.
+      window.__aliflamCheckoutCartChanged = function(){
+        wcSyncCartCount();
+        if(checkout.classList.contains('open')){
+          renderCheckoutCart();
+          renderDesign();
+          if(!wcCart.length){
+            setStep(1);
+          }
+        }
+      };
+
       $('wcCartFloat').onclick=openCheckout7;$('wcClose').onclick=closeCheckout7;
       $('wcAddAnotherOrder').onclick=()=>{closeCheckout7();closeProductDetail();showAppPage('produk');};
-      $('wcStep1Next').onclick=()=>setStep(2);$('wcStep2Back').onclick=()=>setStep(1);$('wcStep2Next').onclick=()=>{if(!validateDesign()){aliflamAlert('Pilih status desain dan isi request jika memilih BELUM PUNYA DESAIN.');return;}setStep(3)};
+      $('wcStep1Next').onclick=()=>{
+        if(!wcCart.length){
+          aliflamAlert('Belum ada produk di keranjang. Silakan tambah pesanan terlebih dahulu sebelum lanjut.');
+          return;
+        }
+        setStep(2);
+      };
+      $('wcStep2Back').onclick=()=>setStep(1);$('wcStep2Next').onclick=()=>{if(!validateDesign()){aliflamAlert('Pilih status desain terlebih dahulu.');return;}setStep(3)};
       $('wcStep3Back').onclick=()=>setStep(2);$('wcStep3Next').onclick=async()=>{if(await prepareBuyer())setStep(4)};
       $('wcStep4Back').onclick=()=>setStep(3);$('wcStep4Next').onclick=()=>{if(validateAddress()){addressTotals();setStep(5)}};
       $('wcStep5Back').onclick=()=>setStep(4);$('wcCreateOrder').onclick=createFullOrder;$('wcConfirmWa').onclick=openWa;$('wcStep6Done').onclick=()=>setStep(7);$('wcSuccessWa').onclick=openWa;
       $('wcSuccessOrders').onclick=()=>{closeCheckout7();showAppPage('pesanan');renderMyOrders()};$('wcSuccessClose').onclick=closeCheckout7;
       ['wcShippingCost'].forEach(id=>$(id).addEventListener('input',addressTotals));
       $('wcPayQris').onclick=()=>{paymentMethod='QRIS';$('wcPayQris').classList.add('active');$('wcPaySea').classList.remove('active')};$('wcPaySea').onclick=()=>{paymentMethod='SEABANK';$('wcPaySea').classList.add('active');$('wcPayQris').classList.remove('active')};
-      // Override old modal checkout button and old cart button behavior.
-      const modalBtn=$('modalCheckout'); if(modalBtn){const c=modalBtn.cloneNode(true);modalBtn.replaceWith(c);$('modalCheckout').addEventListener('click',function(){if(this.disabled||!currentDetailProduct){aliflamAlert('Produk ini belum tersedia untuk pemesanan melalui website.');return;}if(!webPricesLoaded){aliflamAlert('Data harga belum berhasil dimuat.');return;}wcOpen(currentDetailProduct);$('wcLegacyCompat').classList.add('wc-legacy-visible');$('wcStepDots').style.display='none';});}
-      const legacyAdd=$('wcAdd'); if(legacyAdd){legacyAdd.addEventListener('click',()=>{setTimeout(()=>{if(wcCart.length){$('wcLegacyCompat').classList.remove('wc-legacy-visible');$('wcStepDots').style.display='flex';$('wcSuccessPopup').classList.add('wc-hidden');renderCheckoutCart();renderDesign();setStep(1);}},300);});}
+      // CHECKOUT VIA WEB -> tampilkan form pilihan produk saja.
+      // Setelah produk disimpan, baru masuk ke halaman KERANJANG 7-step.
+      const showLegacyConfig=()=>{
+        $('wcLegacyCompat').classList.add('wc-legacy-visible');
+        $('wcStepDots').style.display='none';
+        document.querySelectorAll('.wc-step-page').forEach(el=>el.classList.remove('active'));
+      };
+      const showCheckoutCartStep=()=>{
+        $('wcLegacyCompat').classList.remove('wc-legacy-visible');
+        $('wcStepDots').style.display='flex';
+        renderCheckoutCart();
+        renderDesign();
+        setStep(1);
+      };
+      const modalBtn=$('modalCheckout');
+      if(modalBtn){
+        const c=modalBtn.cloneNode(true);
+        modalBtn.replaceWith(c);
+        $('modalCheckout').addEventListener('click',function(){
+          if(this.disabled||!currentDetailProduct){aliflamAlert('Produk ini belum tersedia untuk pemesanan melalui website.');return;}
+          if(!webPricesLoaded){aliflamAlert('Data harga belum berhasil dimuat.');return;}
+          wcOpen(currentDetailProduct);
+          showLegacyConfig();
+        });
+      }
+      // Setelah TAMBAH/SIMPAN, langsung pindah ke KERANJANG. Tidak ada config + keranjang bersamaan.
+      const legacyAdd=$('wcAdd');
+      if(legacyAdd){
+        legacyAdd.addEventListener('click',()=>{
+          setTimeout(()=>{
+            if(wcCart.length) showCheckoutCartStep();
+          },160);
+        });
+      }
+      // EDIT dari keranjang: tetap di checkout, buka form produk saja, lalu kembali ke keranjang setelah disimpan.
+      window.__aliflamCheckoutShowConfig=showLegacyConfig;
+
+      // Dipanggil oleh handler HAPUS global agar isi keranjang checkout langsung berubah.
+      window.__aliflamCheckoutCartChanged=()=>{
+        renderCheckoutCart();
+        renderDesign();
+        if(!wcCart.length){
+          setStep(1);
+        }
+      };
+
       document.querySelectorAll('.bottom-nav-btn[data-page="pesanan"]').forEach(btn=>btn.addEventListener('click',()=>setTimeout(renderMyOrders,0)));
       renderMyOrders();
       const originalShow=window.showAppPage;
