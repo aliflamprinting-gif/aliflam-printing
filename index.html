@@ -481,6 +481,38 @@
 
     }
 
+    .checkout-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 43px;
+      margin-bottom: 8px;
+      border: 0;
+      border-radius: 10px;
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: center;
+      transition: .18s;
+    }
+
+    .checkout-btn:hover:not(:disabled) { background: #15803d; }
+    .checkout-note {
+      margin: -1px 0 9px;
+      color: #b45309;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .checkout-btn:disabled,
+    .checkout-btn.disabled {
+      background: #d1d5db;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
     .shopee-btn {
       display: flex;
       justify-content: center;
@@ -750,6 +782,7 @@
       .product-label { font-size: 9px; }
       .detail-btn { min-height: 38px; font-size: 10px; }
       .shopee-btn { min-height: 40px; font-size: 11px; }
+      .checkout-btn { min-height: 40px; font-size: 11px; }
       .footer-inner { display: block; }
 
       .wa-float {
@@ -1044,6 +1077,16 @@
       <div class="modal-price-label">Harga mulai</div>
       <div class="modal-price" id="modalPrice"></div>
 
+      <button
+        class="checkout-btn disabled"
+        id="modalCheckout"
+        type="button"
+        disabled
+      >CHECKOUT VIA WEB</button>
+      <p class="checkout-note" id="checkoutNote" hidden>
+        Produk ini belum tersedia untuk pemesanan melalui website. Silakan pesan melalui Shopee atau hubungi admin.
+      </p>
+
       <a
         class="shopee-btn"
         id="modalShopee"
@@ -1152,6 +1195,8 @@
     const emptyState = document.getElementById("emptyState");
 
     let allProducts = [];
+    let webOrderableProductIds = new Set();
+    let webPricesLoaded = false;
     let activeCategory = "BEST_SELLER";
 
     document.getElementById("year").textContent =
@@ -1533,14 +1578,83 @@
 
 
     // ==========================================
+    // STATUS ORDER VIA WEB DARI TABEL HARGA JUAL WEB
+    // ==========================================
+
+    async function loadWebPrices() {
+      try {
+        const url = API_URL + "?action=webPrices";
+        const response = await fetch(url, {
+          method: "GET",
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("Server API harga merespons " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.prices)) {
+          throw new Error("Format data API harga tidak sesuai.");
+        }
+
+        webOrderableProductIds = new Set(
+          data.prices
+            .filter(function(row) {
+              const availability = String(row["TERSEDIA DI WEB"] || "")
+                .trim()
+                .toUpperCase();
+              const price = Number(row["HARGA JUAL (Rp)"]) || 0;
+              return (availability === "IYA" || availability === "YA") && price > 0;
+            })
+            .map(function(row) {
+              return String(row["ID PRODUK"] || "").trim();
+            })
+            .filter(Boolean)
+        );
+
+        webPricesLoaded = true;
+        updateOpenProductCheckout();
+      } catch (error) {
+        console.error("Gagal memuat status order web:", error);
+        webOrderableProductIds = new Set();
+        webPricesLoaded = false;
+        updateOpenProductCheckout();
+      }
+    }
+
+    let currentDetailProduct = null;
+
+    function updateOpenProductCheckout() {
+      const checkout = document.getElementById("modalCheckout");
+      if (!checkout || !currentDetailProduct) return;
+
+      const productId = String(getField(currentDetailProduct, "ID PRODUK") || "").trim();
+      const canOrder = webPricesLoaded && webOrderableProductIds.has(productId);
+
+      checkout.disabled = !canOrder;
+      checkout.classList.toggle("disabled", !canOrder);
+      checkout.textContent = canOrder ? "CHECKOUT VIA WEB" : "CHECKOUT VIA WEB — BELUM TERSEDIA";
+      checkout.setAttribute("aria-disabled", canOrder ? "false" : "true");
+
+      const note = document.getElementById("checkoutNote");
+      if (note) {
+        note.hidden = canOrder;
+      }
+    }
+
+    // ==========================================
     // DETAIL PRODUK
     // ==========================================
 
     function openProductDetail(product) {
+      currentDetailProduct = product;
       const modal = document.getElementById("productModal");
       const image = document.getElementById("modalImage");
       const labelWrap = document.getElementById("modalLabel");
       const shopee = document.getElementById("modalShopee");
+      const checkout = document.getElementById("modalCheckout");
 
       const imageUrl = getImageUrl(
         getField(product, "GAMBAR")
@@ -1613,12 +1727,23 @@
         shopee.setAttribute("aria-disabled", "true");
       }
 
+      updateOpenProductCheckout();
+
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
 
       document.body.style.overflow = "hidden";
     }
 
+
+    document.getElementById("modalCheckout").addEventListener("click", function() {
+      if (this.disabled || !currentDetailProduct) {
+        alert("Produk ini belum tersedia untuk pemesanan melalui website. Silakan pesan melalui Shopee atau hubungi admin.");
+        return;
+      }
+
+      alert("Produk tersedia untuk order via web. Halaman checkout akan kita buat pada tahap berikutnya.");
+    });
 
     document.getElementById("modalShopee").addEventListener("click", function(event) {
       if (this.classList.contains("disabled") || !this.dataset.analyticsProduct) {
@@ -1897,6 +2022,7 @@
     });
 
     loadProducts();
+    loadWebPrices();
   </script>
 </body>
 </html>
