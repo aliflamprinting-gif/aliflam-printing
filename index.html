@@ -2124,7 +2124,8 @@
           vals.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;el.appendChild(o);});
           el.required=vals.length>0;
           el.disabled=vals.length===0;
-          el.parentElement.style.display=vals.length?"":"none";
+          const field=el.closest(".wc-field");
+          if(field)field.style.display=vals.length?"":"none";
         };
         fill(wc("wcVar1"),k1,"variasi 1");fill(wc("wcVar2"),k2,"variasi 2");
       }
@@ -2164,6 +2165,7 @@
         const customSize=note==="Ukuran diisi manual sesuai pesanan.";
         wc("wcUnitLine").style.display=customSize?"none":"";
         const w=Number(wc("wcWidth").value),h=Number(wc("wcHeight").value);
+        wc("wcBannerSummary").style.display=customSize?"none":"";
         wc("wcBannerSummary").textContent=`Cetak ${Number.isInteger(qty)&&qty>0?qty:1}x ukuran ${w>0?w:0}x${h>0?h:0} CM`;
         const calc=(w>0&&h>0)?wcBannerCalc(w,h):null;
         unit=row?wcNum(wcField(row,"HARGA JUAL (Rp)")):0;
@@ -2177,6 +2179,7 @@
         wc("wcMinHint").textContent="";
       } else {
         wc("wcUnitLine").style.display="";
+        wc("wcBannerSummary").style.display="none";
         row=wcSelectedRow();
         unit=row?wcNum(wcField(row,"HARGA JUAL (Rp)")):0;
         const min=row?Math.max(1, Number(wcField(row,"MINIMAL ORDER"))||1):1;
