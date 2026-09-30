@@ -1605,8 +1605,7 @@
               const availability = String(row["TERSEDIA DI WEB"] || "")
                 .trim()
                 .toUpperCase();
-              const price = Number(row["HARGA JUAL (Rp)"]) || 0;
-              return (availability === "IYA" || availability === "YA") && price > 0;
+              return availability === "IYA";
             })
             .map(function(row) {
               return String(row["ID PRODUK"] || "").trim();
