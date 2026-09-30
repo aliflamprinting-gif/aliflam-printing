@@ -1264,7 +1264,7 @@
             <div class="wc-field"><label for="wcWidth">Lebar (cm)</label><input id="wcWidth" type="number" min="1" placeholder="Contoh: 120"></div>
             <div class="wc-field"><label for="wcHeight">Tinggi (cm)</label><input id="wcHeight" type="number" min="1" placeholder="Contoh: 50"></div>
           </div>
-          <div class="wc-field"><label for="wcDesign">Status desain</label>
+          <div class="wc-field" id="wcDesignField" style="display:none"><label for="wcDesign">Status desain</label>
             <select id="wcDesign" required><option value="">PILIH SALAH SATU</option><option value="own">Sudah punya desain</option><option value="new">Belum punya desain</option></select>
           </div>
           <div class="wc-field"><label for="wcBannerFinish">Finishing</label><select id="wcBannerFinish"></select></div>
@@ -2220,13 +2220,16 @@
         const note=String(wcField(row,"CATATAN")||"").trim().toLowerCase().replace(/[.!?]+$/g,"").trim();
         const customSize=note.includes("ukuran diisi manual sesuai pesanan");
         wc("wcUnitLine").style.display=customSize?"none":"";
+        wc("wcDesignField").style.display="none";
+        wc("wcDesign").required=false;
+        wc("wcDesign").value="";
         const w=Number(wc("wcWidth").value),h=Number(wc("wcHeight").value);
         wc("wcBannerSummary").style.display=customSize?"":"none";
         if(customSize) wc("wcBannerSummary").textContent=`Cetak ${Number.isInteger(qty)&&qty>0?qty:1}x ukuran ${w>0?w:0}x${h>0?h:0} CM`;
         const calc=(w>0&&h>0)?wcBannerCalc(w,h):null;
         unit=row?wcNum(wcField(row,"HARGA JUAL (Rp)")):0;
         if(customSize) pcs=calc?calc.pcs*qty:0;
-        choiceValid=!!row && !!wc("wcDesign").value && !!finish && (!customSize || !!calc);
+        choiceValid=!!row && !!finish && (!customSize || !!calc);
         const material=wcField(row,"OPSI VARIASI 1") || "";
         detail=customSize
           ?(calc?`${w}x${h} cm · ${material} · ${calc.area} m² · ${calc.pcs} PCS/banner`:"Isi ukuran banner")
@@ -2313,7 +2316,6 @@
         const missing=[
           [wc("wcWidth"),!Number(wc("wcWidth").value),"Isi lebar banner."],
           [wc("wcHeight"),!Number(wc("wcHeight").value),"Isi tinggi banner."],
-          [wc("wcDesign"),!wc("wcDesign").value,"Pilih status desain."],
           [wc("wcBannerFinish"),!wc("wcBannerFinish").value,"Pilih finishing."]
         ].find(x=>x[1]);
         if(missing){focusMissing(missing[0],missing[2]);return;}
@@ -2326,9 +2328,9 @@
       if(!Number.isInteger(qty)||qty<min){focusMissing(wc("wcQty"),`Jumlah minimal untuk produk ini ${min}.`);return;}
       if(!unit||!pcs){const target=banner?wc("wcWidth"):wc("wcVar1");focusMissing(target,"Pilihan belum lengkap atau harga belum tersedia.");return;}
       const detail=banner
-        ?`${customSize?`${wc("wcWidth").value}x${wc("wcHeight").value} cm · `:""}${[wcField(row,"OPSI VARIASI 1"),wcField(row,"OPSI VARIASI 2")].filter(Boolean).join(" · ")} · ${wc("wcDesign").value==="own"?"Sudah punya desain":"Belum punya desain"}${""}`
+        ?`${customSize?`${wc("wcWidth").value}x${wc("wcHeight").value} cm · `:""}${[wcField(row,"OPSI VARIASI 1"),wcField(row,"OPSI VARIASI 2")].filter(Boolean).join(" · ")}`
         :[row["OPSI VARIASI 1"],row["OPSI VARIASI 2"]].filter(Boolean).join(" / ");
-      const item={productId:id,name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs,customSize,banner,width:banner?wc("wcWidth").value:"",height:banner?wc("wcHeight").value:"",design:banner?wc("wcDesign").value:"",finish:banner?wc("wcBannerFinish").value:"",var1:!banner?wc("wcVar1").value:"",var2:!banner?wc("wcVar2").value:"",qty};
+      const item={productId:id,name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs,customSize,banner,width:banner?wc("wcWidth").value:"",height:banner?wc("wcHeight").value:"",design:banner&&!customSize?wc("wcDesign").value:"",finish:banner?wc("wcBannerFinish").value:"",var1:!banner?wc("wcVar1").value:"",var2:!banner?wc("wcVar2").value:"",qty};
       if(wcEditingIndex>=0){wcCart[wcEditingIndex]=item;wcEditingIndex=-1;} else {wcCart.push(item);}
       wcSaveCart();wcRenderCart();
       wc("wcSuccessPopup").classList.remove("wc-hidden");
@@ -2362,6 +2364,8 @@
       wcClose();
     });
     function wcOpenCart() {
+      // Muat ulang tampilan dari data keranjang yang sudah dipulihkan dari localStorage.
+      wcRenderCart();
       if(!wcCart.length){
         // Tutup checkout lebih dulu supaya popup peringatan tampil di atas halaman PRODUK, bukan form checkout.
         wcClose();
