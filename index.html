@@ -972,6 +972,7 @@
     .wc-field{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
     .wc-field label{font-size:13px;font-weight:800}
     .wc-field input,.wc-field select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:15px;background:#fff}
+    .wc-field.wc-invalid input,.wc-field.wc-invalid select,.wc-field.wc-invalid .wc-select-trigger{border:1.5px solid #dc2626!important;box-shadow:0 0 0 2px rgba(220,38,38,.10)}
     .wc-muted{color:#64748b;font-size:12px;line-height:1.5}
     .wc-min-alert{color:#dc2626;font-weight:800}
     .wc-btn{border:0;border-radius:10px;padding:13px 16px;background:#16a34a;color:white;font-weight:900;cursor:pointer;width:100%;margin-top:8px}
@@ -3251,7 +3252,25 @@
       receiverWaInput.addEventListener('input',()=>applyWaFormat(receiverWaInput));
       receiverWaInput.addEventListener('paste',()=>setTimeout(()=>applyWaFormat(receiverWaInput),0));
       receiverWaInput.addEventListener('blur',()=>applyWaFormat(receiverWaInput));
-      function validateAddress(){if(selectedShippingRegion!=='JAVA'){aliflamAlert('Pilih PULAU JAWA untuk melanjutkan checkout website.');return false;}const ids=['wcReceiverName','wcReceiverWa','wcProvince','wcCity','wcDistrict','wcVillage','wcPostal','wcShippingArea','wcAddress'];for(const id of ids)if(!$(id).value.trim()){aliflamAlert('Lengkapi data alamat pengiriman terlebih dahulu.');return false;}return true;}
+      const addressRequiredIds=['wcReceiverName','wcReceiverWa','wcProvince','wcCity','wcDistrict','wcVillage','wcPostal','wcShippingArea','wcAddress'];
+      function setAddressFieldInvalid(id,invalid){
+        const el=$(id);if(!el)return;
+        const field=el.closest('.wc-field');
+        if(field)field.classList.toggle('wc-invalid',!!invalid);
+        const wrap=el.closest('.wc-select-wrap');
+        if(wrap)wrap.classList.toggle('wc-invalid',!!invalid);
+      }
+      function refreshAddressField(id){
+        const el=$(id);if(!el)return;
+        setAddressFieldInvalid(id,!String(el.value||'').trim());
+      }
+      function validateAddress(){
+        if(selectedShippingRegion!=='JAVA'){aliflamAlert('Pilih PULAU JAWA untuk melanjutkan checkout website.');return false;}
+        const missing=addressRequiredIds.filter(id=>!String($(id).value||'').trim());
+        addressRequiredIds.forEach(id=>setAddressFieldInvalid(id,missing.includes(id)));
+        if(missing.length){aliflamAlert('Lengkapi data alamat pengiriman terlebih dahulu.');const first=$(missing[0]);if(first){first.scrollIntoView({behavior:'smooth',block:'center'});if(first.focus)first.focus();}return false;}
+        return true;
+      }
       function catatanDesain(item){ if(item.designStatus==='BELUM PUNYA DESAIN') return 'STATUS DESAIN: BELUM PUNYA DESAIN\n\nRequest: '+item.designRequest; return 'STATUS DESAIN: SUDAH PUNYA DESAIN'; }
       function waMessage(){
         let out='Halo Aliflam, saya ingin konfirmasi pesanan:\n\n'+(checkoutOrder?.nomorPesanan||'');
@@ -3319,6 +3338,7 @@
       $('wcCity').addEventListener('change',()=>{populateDistricts();calculateShipping();});
       $('wcDistrict').addEventListener('change',()=>{populateVillages();});
       $('wcVillage').addEventListener('change',onVillageChanged);
+      addressRequiredIds.forEach(id=>{const el=$(id);if(!el)return;const eventName=(el.tagName==='SELECT')?'change':'input';el.addEventListener(eventName,()=>refreshAddressField(id));if(eventName!=='change')el.addEventListener('change',()=>refreshAddressField(id));});
       prepareAddressStep();
       wcSyncCustomSelects();
       $('wcStep5Back').onclick=()=>setStep(4);$('wcCreateOrder').onclick=createFullOrder;$('wcConfirmWa').onclick=openWa;$('wcStep6Done').onclick=()=>setStep(7);$('wcSuccessWa').onclick=openWa;
