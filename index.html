@@ -2869,14 +2869,17 @@
 
     function openHelpModal() {
       helpModal.classList.add("open");
+      const bottomNav = document.querySelector(".bottom-nav");
+      if (bottomNav) bottomNav.style.display = "none";
       helpModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
       renderHelpFaq();
-      helpSearch.focus();
     }
 
     function closeHelpModal() {
       helpModal.classList.remove("open");
+      const bottomNav = document.querySelector(".bottom-nav");
+      if (bottomNav) bottomNav.style.display = "";
       helpModal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
     }
