@@ -2539,6 +2539,7 @@
     function wcClose() {
       wc("webCheckout").classList.remove("open");
       document.body.classList.remove("checkout-open");
+      document.body.classList.remove("detail-open");
       wc("webCheckout").setAttribute("aria-hidden","true");
       // Checkout dibuka dari detail produk yang sudah mengunci scroll.
       // Saat checkout ditutup, lepaskan lock agar halaman utama bisa discroll lagi.
@@ -2936,7 +2937,12 @@
         checkout.classList.add('open'); checkout.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
         renderCheckoutCart(); renderDesign(); selectedShippingRegion=''; pendingBuyerAddress=null; lastShippingResult=null; prepareAddressStep(); setStep(1);
       }
-      function closeCheckout7(){ checkout.classList.remove('open'); checkout.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+      function closeCheckout7(){
+        checkout.classList.remove('open');
+        checkout.setAttribute('aria-hidden','true');
+        document.body.classList.remove('checkout-open');
+        document.body.style.overflow='';
+      }
       function renderCheckoutCart(){
         const root=$('wcCheckoutCart'); root.innerHTML='';
         if(!wcCart.length) root.innerHTML='<p class="wc-muted">Belum ada produk di keranjang.</p>';
