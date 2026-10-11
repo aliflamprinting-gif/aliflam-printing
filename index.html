@@ -1117,7 +1117,7 @@
     .wc-delete-btn{background:#dc2626;color:#fff}
 
 /* CHECKOUT ALIFLAM V1 - 7 STEP */
-.checkout-steps{display:flex;gap:6px;overflow:auto;margin:0 0 14px;padding-bottom:3px}
+.checkout-steps{display:none!important}
 .checkout-step-dot{flex:1 0 52px;text-align:center;font-size:10px;font-weight:900;color:#94a3b8}
 .checkout-step-dot b{display:grid;place-items:center;width:28px;height:28px;margin:0 auto 4px;border-radius:50%;background:#e2e8f0;color:#64748b}
 .checkout-step-dot.active{color:#1d4ed8}.checkout-step-dot.active b{background:#1d4ed8;color:#fff}
@@ -1129,7 +1129,7 @@
 .wc-order-summary{background:#f8fafc;border:1px solid #e5eaf1;border-radius:12px;padding:13px}.wc-order-summary .wc-line{padding:7px 0}
 .wc-item-checkout{border:1px solid #e5eaf1;border-radius:13px;padding:14px;margin-bottom:10px}.wc-item-checkout h4{margin:0 0 6px;font-size:15px}.wc-item-checkout .wc-muted{margin-bottom:9px}
 .wc-status-badge{display:inline-block;padding:5px 8px;border-radius:8px;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:900}
-.wc-pay-card{border:1px solid #dbe3ef;border-radius:13px;padding:14px;margin-bottom:10px}.wc-pay-card.active{border-color:#16a34a;background:#f0fdf4}.wc-bank{font-size:18px;font-weight:900;margin:6px 0}.wc-success-big{text-align:center;padding:14px 4px}.wc-success-big .icon{font-size:48px}.wc-success-big h3{margin:8px 0;color:#172033}.wc-success-big p{color:#64748b;line-height:1.6;font-size:13px}
+.wc-pay-card{border:1px solid #dbe3ef;border-radius:13px;padding:14px;margin-bottom:10px;cursor:pointer}.wc-pay-card.active{border-color:#16a34a;background:#f0fdf4}.wc-pay-card .wc-pay-detail{display:none}.wc-pay-card.active .wc-pay-detail{display:block}.wc-pay-card>small{display:block;margin-top:5px}.wc-pay-card:focus-visible{outline:3px solid #bfdbfe;outline-offset:2px}.wc-bank{font-size:18px;font-weight:900;margin:6px 0}.wc-success-big{text-align:center;padding:14px 4px}.wc-success-big .icon{font-size:48px}.wc-success-big h3{margin:8px 0;color:#172033}.wc-success-big p{color:#64748b;line-height:1.6;font-size:13px}
 .wc-wa{background:#16a34a!important}.wc-legacy-visible{display:block!important}.wc-wa:disabled{background:#9ca3af!important}
 .wc-region-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
 .wc-region-choice .wc-choice{min-height:100px}
@@ -1145,7 +1145,7 @@
 .wc-ongkir-info{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:11px;padding:11px 12px;margin:10px 0;color:#166534;font-size:12px;line-height:1.5}
 @media(max-width:560px){.wc-region-choice{grid-template-columns:1fr}}
 
-@media(max-width:560px){.wc-choice-grid{grid-template-columns:1fr}.wc-nav-actions{grid-template-columns:1fr}.checkout-step-dot{font-size:8px}.checkout-step-dot b{width:25px;height:25px}}
+@media(max-width:560px){.wc-choice-grid{grid-template-columns:1fr}.wc-design-choice-grid{grid-template-columns:1fr 1fr}.wc-nav-actions{grid-template-columns:1fr}.checkout-step-dot{font-size:8px}.checkout-step-dot b{width:25px;height:25px}}
 
 </style>
 </head>
@@ -1364,7 +1364,7 @@
       </section>
 
       <section class="wc-card wc-step-page" id="wcStep2">
-        <h3 class="wc-step-title">Desain</h3><p class="wc-step-sub">Pilih status desain untuk setiap produk. File desain dikirim melalui WhatsApp/email dengan nomor pesanan.</p>
+        <h3 class="wc-step-title">PILIH STATUS DESAIN</h3>
         <div id="wcDesignList"></div>
         <div class="wc-nav-actions"><button class="wc-btn light" id="wcStep2Back" type="button">KEMBALI</button><button class="wc-btn secondary" id="wcStep2Next" type="button">LANJUTKAN</button></div>
       </section>
@@ -1434,8 +1434,8 @@
 
       <section class="wc-card wc-step-page" id="wcStep5">
         <h3 class="wc-step-title">Pembayaran</h3><p class="wc-step-sub">Pilih metode pembayaran. Setelah pesanan dibuat, status awal adalah MENUNGGU PEMBAYARAN.</p>
-        <div class="wc-pay-card active" id="wcPayQris" data-method="QRIS"><b>QRIS ALIFLAM</b><small class="wc-muted">Bayar menggunakan QRIS Aliflam Printing.</small><img class="wc-qris" src="https://raw.githubusercontent.com/aliflamprinting-gif/aliflam-printing/main/QRIS%20ALIFLAM%20PRINTING.png" alt="QRIS Aliflam Printing"></div>
-        <div class="wc-pay-card" id="wcPaySea" data-method="SEABANK"><b>SEABANK</b><div class="wc-bank">9017 1942 0010</div><div class="wc-muted">M. Aziz Jaelani</div></div>
+        <div class="wc-pay-card" id="wcPayQris" data-method="QRIS" role="button" tabindex="0" aria-label="Pilih pembayaran QRIS"><b>QRIS</b><small class="wc-muted">Bayar dengan scan QRIS</small><div class="wc-pay-detail"><img class="wc-qris" src="https://raw.githubusercontent.com/aliflamprinting-gif/aliflam-printing/main/QRIS%20ALIFLAM%20PRINTING.png" alt="QRIS Aliflam Printing"></div></div>
+        <div class="wc-pay-card" id="wcPaySea" data-method="SEABANK" role="button" tabindex="0" aria-label="Pilih pembayaran SEABANK"><b>SEABANK</b><small class="wc-muted">Transfer melalui rekening bank</small><div class="wc-pay-detail"><div class="wc-bank">9017 1942 0010</div><div class="wc-muted">M. Aziz Jaelani</div></div></div>
         <div class="wc-order-summary"><div class="wc-line"><span>Subtotal</span><b id="wcPaySubtotal">Rp0</b></div><div class="wc-line"><span>Ongkir</span><b id="wcPayOngkir">Rp0</b></div><div class="wc-line"><strong>Total</strong><strong class="wc-total" id="wcPayGrandTotal">Rp0</strong></div></div>
         <div class="wc-nav-actions"><button class="wc-btn light" id="wcStep5Back" type="button">KEMBALI</button><button class="wc-btn secondary" id="wcCreateOrder" type="button">BUAT PESANAN</button></div>
       </section>
@@ -2977,7 +2977,7 @@
       let checkoutStep = 1;
       let checkoutOrder = null;
       let checkoutBuyerId = '';
-      let paymentMethod = 'QRIS';
+      let paymentMethod = '';
       let designData = [];
       let wilayahJawaData = [];
       let wilayahJawaLoaded = false;
@@ -3008,7 +3008,7 @@
       function openCheckout7(){
         if(!wcCart.length){ wcClose(); closeProductDetail(); showAppPage('produk'); aliflamAlert('Keranjang masih kosong. Pilih produk dan tambahkan dulu.'); return; }
         checkout.classList.add('open'); checkout.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
-        renderCheckoutCart(); renderDesign(); selectedShippingRegion=''; pendingBuyerAddress=null; lastShippingResult=null; prepareAddressStep(); setStep(1);
+        renderCheckoutCart(); renderDesign(); paymentMethod=''; $('wcPayQris').classList.remove('active'); $('wcPaySea').classList.remove('active'); selectedShippingRegion=''; pendingBuyerAddress=null; lastShippingResult=null; prepareAddressStep(); setStep(1);
       }
       function closeCheckout7(){
         checkout.classList.remove('open');
@@ -3039,19 +3039,21 @@
       }
       function renderDesign(){
         const root=$('wcDesignList'); root.innerHTML='';
-        designData=wcCart.map((item,i)=>({status:item.designStatus||'',request:item.designRequest||''}));
+        designData=wcCart.map(item=>({status:item.designStatus||'',request:''}));
         wcCart.forEach((item,i)=>{
           const box=document.createElement('div'); box.className='wc-item-checkout';
-          box.innerHTML='<h4>'+(i+1)+'. '+item.name+'</h4><div class="wc-muted">'+(item.detail||'')+'</div>';
-          const grid=document.createElement('div'); grid.className='wc-choice-grid';
-          const own=document.createElement('button'); own.type='button'; own.className='wc-choice'; own.innerHTML='<b>SUDAH PUNYA DESAIN</b><small>File desain dikirim lewat WhatsApp/email.</small>';
-          const fresh=document.createElement('button'); fresh.type='button'; fresh.className='wc-choice'; fresh.innerHTML='<b>BELUM PUNYA DESAIN</b><small>Aliflam membuat desain sesuai request.</small>';
-          const req=document.createElement('textarea'); req.style.cssText='display:none;width:100%;margin-top:9px;padding:11px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;min-height:85px'; req.placeholder='Contoh: Buatkan desain promo makanan warna merah';
-          function sync(){own.classList.toggle('active',designData[i].status==='SUDAH PUNYA DESAIN');fresh.classList.toggle('active',designData[i].status==='BELUM PUNYA DESAIN');req.style.display=designData[i].status==='BELUM PUNYA DESAIN'?'block':'none';req.value=designData[i].request||'';}
+          const title=document.createElement('h4'); title.textContent=(i+1)+'. '+item.name; box.appendChild(title);
+          const variation=document.createElement('div'); variation.className='wc-muted';
+          const variationParts=[item.var1,item.var2].map(v=>String(v||'').trim()).filter(Boolean);
+          variation.textContent=variationParts.length ? variationParts.join(' / ') : (item.detail||'');
+          box.appendChild(variation);
+          const grid=document.createElement('div'); grid.className='wc-choice-grid wc-design-choice-grid';
+          const own=document.createElement('button'); own.type='button'; own.className='wc-choice'; own.innerHTML='<b>SUDAH PUNYA</b>';
+          const fresh=document.createElement('button'); fresh.type='button'; fresh.className='wc-choice'; fresh.innerHTML='<b>BELUM PUNYA</b>';
+          function sync(){own.classList.toggle('active',designData[i].status==='SUDAH PUNYA DESAIN');fresh.classList.toggle('active',designData[i].status==='BELUM PUNYA DESAIN');}
           own.onclick=()=>{designData[i].status='SUDAH PUNYA DESAIN';designData[i].request='';sync()};
-          fresh.onclick=()=>{designData[i].status='BELUM PUNYA DESAIN';sync()};
-          req.oninput=()=>designData[i].request=req.value;
-          grid.append(own,fresh); box.append(grid,req); root.appendChild(box); sync();
+          fresh.onclick=()=>{designData[i].status='BELUM PUNYA DESAIN';designData[i].request='';sync()};
+          grid.append(own,fresh); box.appendChild(grid); root.appendChild(box); sync();
         });
       }
       function validateDesign(){
@@ -3360,7 +3362,7 @@
       function openWa(){window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(checkoutWaMessage||waMessage()),'_blank','noopener');}
       function saveHistory(orderId,accessToken){let h=[];try{h=JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY)||'[]')}catch(e){};if(!h.includes(orderId))h.unshift(orderId);localStorage.setItem(ORDER_HISTORY_KEY,JSON.stringify(h.slice(0,50)));if(accessToken){let t={};try{t=JSON.parse(localStorage.getItem('aliflam_order_access_tokens')||'{}')}catch(e){};t[orderId]=accessToken;const keys=Object.keys(t);while(keys.length>50)delete t[keys.shift()];localStorage.setItem('aliflam_order_access_tokens',JSON.stringify(t));}}
       async function createFullOrder(){
-        const buyerName=$('wcBuyerName').value.trim(), buyerWa=normalizeWa($('wcBuyerWa').value), addrOk=validateAddress(); if(!addrOk)return;
+        const buyerName=$('wcBuyerName').value.trim(), buyerWa=normalizeWa($('wcBuyerWa').value), addrOk=validateAddress(); if(!addrOk)return; if(!paymentMethod){aliflamAlert('Pilih metode pembayaran QRIS atau SEABANK terlebih dahulu.');return;}
         const totals=addressTotals(); const btn=$('wcCreateOrder');btn.disabled=true;btn.textContent='MEMBUAT PESANAN...';
         try{
           let buyerId=checkoutBuyerId;
@@ -3482,7 +3484,9 @@
       $('wcStep5Back').onclick=()=>setStep(4);$('wcCreateOrder').onclick=createFullOrder;$('wcConfirmWa').onclick=openWa;$('wcStep6Done').onclick=()=>setStep(7);$('wcSuccessWa').onclick=openWa;
       $('wcSuccessOrders').onclick=()=>{closeCheckout7();showAppPage('pesanan');renderMyOrders()};$('wcSuccessClose').onclick=closeCheckout7;
       ['wcShippingCost'].forEach(id=>$(id).addEventListener('input',addressTotals));
-      $('wcPayQris').onclick=()=>{paymentMethod='QRIS';$('wcPayQris').classList.add('active');$('wcPaySea').classList.remove('active')};$('wcPaySea').onclick=()=>{paymentMethod='SEABANK';$('wcPaySea').classList.add('active');$('wcPayQris').classList.remove('active')};
+      const choosePayment=method=>{paymentMethod=method;$('wcPayQris').classList.toggle('active',method==='QRIS');$('wcPaySea').classList.toggle('active',method==='SEABANK')};
+       $('wcPayQris').onclick=()=>choosePayment('QRIS');$('wcPaySea').onclick=()=>choosePayment('SEABANK');
+       ['wcPayQris','wcPaySea'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$(id).click()}}));
       // CHECKOUT VIA WEB -> tampilkan form pilihan produk saja.
       // Setelah produk disimpan, baru masuk ke halaman KERANJANG 7-step.
       const showLegacyConfig=()=>{
@@ -3492,7 +3496,7 @@
       };
       const showCheckoutCartStep=()=>{
         $('wcLegacyCompat').classList.remove('wc-legacy-visible');
-        $('wcStepDots').style.display='flex';
+        $('wcStepDots').style.display='none';
         renderCheckoutCart();
         renderDesign();
         setStep(1);
