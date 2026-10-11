@@ -2236,7 +2236,7 @@
       wc("wcCartPage").classList.toggle("wc-hidden",page!=="cart");
       wc("wcPaymentPage").classList.toggle("wc-hidden",page!=="payment");
     }
-    const wcBannerIds = new Set(["P009","P010","P011"]);
+    const wcBannerIds = new Set(["P001","P009","P010","P011"]);
     const wcFmt = n => "Rp" + Math.round(n).toLocaleString("id-ID");
     const wcNum = v => Number(String(v ?? "").replace(/[^\d]/g,"")) || 0;
     function wcField(row,key) {
