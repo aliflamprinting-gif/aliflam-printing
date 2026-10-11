@@ -2539,7 +2539,7 @@
       const detail=banner
         ?`${customSize?`${wc("wcWidth").value}x${wc("wcHeight").value} cm · `:""}${[wcField(row,"OPSI VARIASI 1"),wcField(row,"OPSI VARIASI 2")].filter(Boolean).join(" · ")}`
         :[row["OPSI VARIASI 1"],row["OPSI VARIASI 2"]].filter(Boolean).join(" / ");
-      const item={productId:id,name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs,customSize,banner,width:banner?wc("wcWidth").value:"",height:banner?wc("wcHeight").value:"",design:banner&&!customSize?wc("wcDesign").value:"",finish:banner?wc("wcBannerFinish").value:"",var1:!banner?wc("wcVar1").value:"",var2:!banner?wc("wcVar2").value:"",qty};
+      const item={productId:id,code:String(wcField(row,"KODE PRODUK")||wcField(row,"KODE VARIASI")||wcField(row,"SKU")||"").trim(),name:(row&&row["NAMA PRODUK"])||wcCurrentProduct["JUDUL PRODUK"],detail,qtyLabel:customSize?`${qty} banner`:`${qty} unit`,unit,total:unit*pcs,customSize,banner,width:banner?wc("wcWidth").value:"",height:banner?wc("wcHeight").value:"",design:banner&&!customSize?wc("wcDesign").value:"",finish:banner?wc("wcBannerFinish").value:"",var1:!banner?wc("wcVar1").value:"",var2:!banner?wc("wcVar2").value:"",pcs:customSize?Number(wc("wcAdd").dataset.pcs)/qty:1,qty};
       if(wcEditingIndex>=0){wcCart[wcEditingIndex]=item;wcEditingIndex=-1;} else {wcCart.push(item);}
       wcSaveCart();wcRenderCart();
       const nextRow=banner?null:wcSelectedRow();
