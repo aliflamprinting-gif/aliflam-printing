@@ -486,6 +486,25 @@
 
     }
 
+    /* Dua jalur pemesanan sejajar agar popup detail lebih ringkas di HP. */
+    .modal-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .modal-actions .checkout-btn,
+    .modal-actions .shopee-btn {
+      min-width: 0;
+      min-height: 43px;
+      margin: 0;
+      padding: 9px 7px;
+      font-size: 11px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
     .checkout-btn {
       display: flex;
       justify-content: center;
@@ -1284,23 +1303,26 @@
       <div class="modal-price-label">Harga mulai</div>
       <div class="modal-price" id="modalPrice"></div>
 
-      <button
-        class="checkout-btn disabled"
-        id="modalCheckout"
-        type="button"
-        disabled
-      >CHECKOUT VIA WEB</button>
+      <div class="modal-actions">
+        <button
+          class="checkout-btn disabled"
+          id="modalCheckout"
+          type="button"
+          disabled
+        >CHECKOUT VIA WEB</button>
+
+        <a
+          class="shopee-btn"
+          id="modalShopee"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >LIHAT DI SHOPEE</a>
+      </div>
+
       <p class="checkout-note" id="checkoutNote" hidden>
         Produk ini belum tersedia untuk pemesanan melalui website. Silakan pesan melalui Shopee atau hubungi admin.
       </p>
-
-      <a
-        class="shopee-btn"
-        id="modalShopee"
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-      >LIHAT DI SHOPEE</a>
     </div>
   </div>
 
