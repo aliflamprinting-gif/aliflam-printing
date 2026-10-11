@@ -2101,7 +2101,7 @@
     // ==========================================
     const wc = id => document.getElementById(id);
     let aliflamAlertOkAction = null;
-    function aliflamAlert(message, onOk) {
+    function aliflamAlert(message, onOk, alertType) {
       const overlay=document.getElementById("aliflamAlert");
       const msg=document.getElementById("aliflamAlertMessage");
       const title=document.getElementById("aliflamAlertTitle");
@@ -2109,7 +2109,7 @@
       const text=String(message||"");
       aliflamAlertOkAction = typeof onOk === "function" ? onOk : null;
       msg.textContent=text;
-      const isError=/belum|gagal|isi |pilih |minimal|tidak tersedia|periksa/i.test(text);
+      const isError=alertType === "error" || (alertType !== "info" && /belum|gagal|isi |pilih |minimal|tidak tersedia|periksa/i.test(text));
       title.textContent=isError?"Perlu diperiksa":"Informasi";
       icon.textContent=isError?"!":"✓";
       icon.style.background=isError?"#fee2e2":"#dbeafe";
@@ -3309,7 +3309,44 @@
         const root=$('myOrdersList'); if(!root)return; let ids=[];try{ids=JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY)||'[]')}catch(e){};root.innerHTML='';if(!ids.length){root.innerHTML='<div class="wc-card"><strong>Belum ada pesanan</strong><p class="wc-muted">Pesanan yang berhasil dibuat di perangkat ini akan muncul di sini.</p></div>';return;}
         let accessTokens={};try{accessTokens=JSON.parse(localStorage.getItem('aliflam_order_access_tokens')||'{}')}catch(e){};for(const id of ids){const card=document.createElement('div');card.className='wc-card';card.innerHTML='<div class="wc-line"><strong>'+id+'</strong><span class="wc-status-badge">MEMUAT...</span></div>';root.appendChild(card);try{const d=await postCheckout({action:'getOrderDetail',orderId:id,accessToken:accessTokens[id]||''});if(d.success){card.innerHTML='<div class="wc-line"><strong>'+d.order.nomorPesanan+'</strong><span class="wc-status-badge">'+d.order.statusPesanan+'</span></div><div class="wc-muted">'+(d.order.tanggal||'')+'</div><div class="wc-line"><span>Total</span><b>'+money(d.order.total)+'</b></div><div class="wc-line"><span>Pembayaran</span><b>'+d.order.statusPembayaran+'</b></div><button class="wc-btn light" type="button">DETAIL PESANAN</button>';card.querySelector('button').onclick=()=>showOrderDetailLocal(d);}}catch(e){card.querySelector('.wc-status-badge').textContent='GAGAL MEMUAT';}}
       }
-      function showOrderDetailLocal(d){aliflamAlert('Nomor: '+d.order.nomorPesanan+'\nStatus pembayaran: '+d.order.statusPembayaran+'\nStatus pesanan: '+d.order.statusPesanan+'\nTotal: '+money(d.order.total));}
+      function showOrderDetailLocal(d){
+        const order=d.order||{};
+        const address=d.address||{};
+        const payment=d.payment||{};
+        const items=Array.isArray(d.items)?d.items:[];
+        const lines=[];
+        lines.push('DETAIL PESANAN');
+        lines.push('Nomor pesanan: '+(order.nomorPesanan||order.orderId||'-'));
+        lines.push('Tanggal: '+(order.tanggal||'-'));
+        lines.push('Status pesanan: '+(order.statusPesanan||'-'));
+        lines.push('Status pembayaran: '+(order.statusPembayaran||payment.status||'-'));
+        lines.push('');
+        lines.push('PRODUK ('+items.length+' item)');
+        if(items.length){items.forEach((item,i)=>{
+          lines.push((i+1)+'. '+(item.namaProduk||item.kodeProduk||'Produk'));
+          const variant=[item.variasi1,item.variasi2].filter(v=>String(v||'').trim()).join(' / ');
+          if(variant)lines.push('   Variasi: '+variant);
+          if(item.ukuran)lines.push('   Ukuran: '+item.ukuran);
+          lines.push('   Jumlah: '+(item.qty||0)+' | Harga: '+money(item.hargaSatuan)+' | Total: '+money(item.totalItem));
+          if(item.catatanDesain)lines.push('   Catatan desain: '+item.catatanDesain);
+        });}else{lines.push('Rincian produk belum tersedia.');}
+        lines.push('');
+        lines.push('ALAMAT PENGIRIMAN');
+        lines.push('Penerima: '+(address.namaPenerima||'-'));
+        lines.push('WhatsApp: '+(address.noWaPenerima||'-'));
+        lines.push('Alamat: '+[address.alamatLengkap,address.kelurahan,address.kecamatan,address.kota,address.provinsi,address.kodePos].filter(v=>String(v||'').trim()).join(', '));
+        lines.push('Wilayah ongkir: '+(address.wilayahOngkir||'-'));
+        lines.push('Ongkir: '+money(address.biayaOngkir));
+        lines.push('');
+        lines.push('PEMBAYARAN');
+        lines.push('Metode: '+(payment.metodePembayaran||'-'));
+        lines.push('Jumlah: '+money(payment.jumlah||order.total));
+        lines.push('Status: '+(payment.status||order.statusPembayaran||'-'));
+        lines.push('');
+        lines.push('Subtotal: '+money(order.subtotal));
+        lines.push('Total pesanan: '+money(order.total));
+        aliflamAlert(lines.join('\n'),null,'info');
+      }
 
       // Ganti handler tombol lama dengan handler checkout 7 step.
       ['wcCartFloat','wcClose','wcStep1Next','wcStep2Back','wcStep2Next','wcStep3Back','wcStep3Next','wcStep4Back','wcStep4Next','wcStep5Back','wcCreateOrder','wcConfirmWa','wcStep6Done','wcSuccessWa','wcSuccessOrders','wcSuccessClose'].forEach(id=>{const el=$(id);if(!el)return;const clone=el.cloneNode(true);el.replaceWith(clone);});
