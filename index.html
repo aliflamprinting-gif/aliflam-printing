@@ -1088,6 +1088,19 @@
     @media(max-width:560px){.web-checkout{padding:18px 12px}.wc-wrap{max-height:88vh;padding:14px;border-radius:18px}.wc-card{padding:14px}.wc-grid{grid-template-columns:1fr}.wc-head h2{font-size:19px}}
 
 
+    /* Header halaman Pesanan Saya tetap terlihat saat daftar digulir. */
+    body.page-pesanan #page-pesanan .catalog-heading {
+      position: sticky;
+      top: 72px;
+      z-index: 19;
+      background: #f8fafc;
+      padding: 12px 0 10px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 700px) {
+      body.page-pesanan #page-pesanan .catalog-heading { top: 62px; }
+    }
+
     body { padding-bottom: 76px; }
     .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:1000;display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-top:1px solid #e5e7eb;padding:7px 8px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px #0f172a0d}
     .bottom-nav-btn{border:0;background:transparent;color:#64748b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;font-weight:800;cursor:pointer}
