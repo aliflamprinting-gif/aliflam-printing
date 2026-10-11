@@ -3377,6 +3377,13 @@
           saveHistory(order.orderId,order.accessToken); checkoutWaMessage=waMessage(); $('wcConfirmNumber').textContent=order.nomorPesanan;$('wcConfirmTotal').textContent=money(totals.total);$('wcWaPreview').textContent=checkoutWaMessage;$('wcSuccessNumber').textContent=order.nomorPesanan;localStorage.setItem('aliflam_last_buyer_wa',buyerWa);wcCart=[];wcSaveCart();wcSyncCartCount();renderCheckoutCart();renderDesign();setStep(6);
         }catch(e){aliflamAlert('Pesanan belum berhasil dibuat. '+e.message);}finally{btn.disabled=false;btn.textContent='BUAT PESANAN';}
       }
+      function formatOrderDateWIB(value){
+        const raw=String(value||'').trim();
+        if(!raw)return '-';
+        const date=new Date(raw);
+        if(Number.isNaN(date.getTime()))return raw;
+        return new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date).replace(/\./g,':').replace(/,/, ',');
+      }
       async function renderMyOrders(){
         const root=$('myOrdersList'); if(!root)return; let ids=[];try{ids=JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY)||'[]')}catch(e){};root.innerHTML='';if(!ids.length){root.innerHTML='<div class="wc-card"><strong>Belum ada pesanan</strong><p class="wc-muted">Pesanan yang berhasil dibuat di perangkat ini akan muncul di sini.</p></div>';return;}
         let accessTokens={};try{accessTokens=JSON.parse(localStorage.getItem('aliflam_order_access_tokens')||'{}')}catch(e){};for(const id of ids){const card=document.createElement('div');card.className='wc-card';card.innerHTML='<div class="wc-line"><strong>'+id+'</strong><span class="wc-status-badge">MEMUAT...</span></div>';root.appendChild(card);try{const d=await postCheckout({action:'getOrderDetail',orderId:id,accessToken:accessTokens[id]||''});if(d.success){card.innerHTML='<div class="wc-line"><strong>'+d.order.nomorPesanan+'</strong><span class="wc-status-badge">'+d.order.statusPesanan+'</span></div><div class="wc-muted">'+(d.order.tanggal||'')+'</div><div class="wc-line"><span>Total</span><b>'+money(d.order.total)+'</b></div><div class="wc-line"><span>Pembayaran</span><b>'+d.order.statusPembayaran+'</b></div><button class="wc-btn light" type="button">DETAIL PESANAN</button>';card.querySelector('button').onclick=()=>showOrderDetailLocal(d);}}catch(e){card.querySelector('.wc-status-badge').textContent='GAGAL MEMUAT';}}
@@ -3429,7 +3436,7 @@
         }).join(''):'<div class="wc-order-detail-value">Rincian produk belum tersedia.</div>';
         const fullAddress=[address.alamatLengkap,resolveRegionValue('kelurahan',address.kelurahan),resolveRegionValue('kecamatan',address.kecamatan),resolveRegionValue('kota',address.kota),resolveRegionValue('provinsi',address.provinsi),address.kodePos].filter(v=>String(v||'').trim()).join(', ')||'-';
         body.innerHTML=
-          '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Informasi pesanan</h4>'+row('Tanggal',order.tanggal||'-')+row('Nomor pesanan',order.nomorPesanan||order.orderId||'-')+'</section>'+
+          '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Informasi pesanan</h4>'+row('Tanggal',formatOrderDateWIB(order.tanggal))+row('Nomor pesanan',order.nomorPesanan||order.orderId||'-')+'</section>'+
           '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Rincian produk ('+items.length+' item)</h4>'+productHtml+'</section>'+
           '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Alamat pengiriman</h4>'+row('Nama penerima',address.namaPenerima||'-')+row('WhatsApp',address.noWaPenerima||'-')+row('Alamat lengkap',fullAddress)+row('Wilayah pengiriman',address.wilayahOngkir||'-')+row('Ongkos kirim',money(address.biayaOngkir))+'</section>'+
           '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Pembayaran</h4>'+row('Metode pembayaran',payment.metodePembayaran||'-')+row('Jumlah pembayaran',money(payment.jumlah||order.total))+row('Status pembayaran',payment.status||order.statusPembayaran||'-')+'</section>'+
