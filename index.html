@@ -1004,6 +1004,38 @@
     .aliflam-alert-ok{width:100%;border:0;border-radius:12px;background:#1d4ed8;color:#fff;font-size:14px;font-weight:900;padding:14px 16px;cursor:pointer}
     @keyframes aliflamPopIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
     @media(max-width:560px){.aliflam-alert-overlay{padding:42px 20px}.aliflam-alert-card{padding:30px 20px 22px;margin:32px auto;border-radius:20px}}
+
+    .wc-order-detail-overlay{position:fixed;inset:0;z-index:11000;background:rgba(15,23,42,.66);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)}
+    .wc-order-detail-overlay.open{display:flex}
+    .wc-order-detail-card{width:min(100%,620px);max-height:min(88dvh,820px);overflow:auto;background:#f8fafc;border-radius:22px;box-shadow:0 24px 80px #0f172a55;animation:aliflamPopIn .18s ease-out}
+    .wc-order-detail-head{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #e2e8f0;padding:20px 22px 16px;border-radius:22px 22px 0 0}
+    .wc-order-detail-head-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .wc-order-detail-brand{font-size:10px;letter-spacing:1.5px;font-weight:900;color:#64748b}
+    .wc-order-detail-title{font-size:21px;line-height:1.25;font-weight:900;color:#172033;margin:5px 0 7px}
+    .wc-order-detail-number{font-size:13px;color:#475569;overflow-wrap:anywhere}
+    .wc-order-detail-close{flex:0 0 38px;width:38px;height:38px;border:0;border-radius:12px;background:#f1f5f9;color:#334155;font-size:23px;font-weight:700;cursor:pointer}
+    .wc-order-detail-statuses{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+    .wc-order-detail-pill{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900;background:#dbeafe;color:#1d4ed8;overflow-wrap:anywhere}
+    .wc-order-detail-pill.pay{background:#fef3c7;color:#92400e}
+    .wc-order-detail-body{padding:14px;display:grid;gap:12px}
+    .wc-order-detail-section{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:15px}
+    .wc-order-detail-section-title{font-size:12px;font-weight:900;letter-spacing:.5px;color:#64748b;margin:0 0 10px;text-transform:uppercase}
+    .wc-order-detail-row{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px;line-height:1.45}
+    .wc-order-detail-row:last-child{border-bottom:0;padding-bottom:0}
+    .wc-order-detail-label{color:#64748b;flex:0 0 38%}
+    .wc-order-detail-value{color:#172033;font-weight:750;text-align:right;overflow-wrap:anywhere;white-space:pre-wrap;min-width:0}
+    .wc-order-product{padding:12px 0;border-bottom:1px solid #e2e8f0}
+    .wc-order-product:first-of-type{padding-top:0}.wc-order-product:last-child{padding-bottom:0;border-bottom:0}
+    .wc-order-product-name{font-size:14px;font-weight:900;color:#172033;line-height:1.4;margin-bottom:5px}
+    .wc-order-product-meta{font-size:12px;line-height:1.65;color:#64748b;overflow-wrap:anywhere}
+    .wc-order-product-total{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-top:7px;color:#334155;font-weight:800}
+    .wc-order-detail-summary{background:#eff6ff;border:1px solid #bfdbfe;border-radius:16px;padding:15px}
+    .wc-order-detail-summary .wc-order-detail-row{border-color:#dbeafe}
+    .wc-order-detail-grand{font-size:17px!important;color:#1d4ed8!important;font-weight:950!important}
+    .wc-order-detail-footer{padding:0 14px 14px;background:#f8fafc}
+    .wc-order-detail-done{width:100%;border:0;border-radius:12px;padding:14px;background:#1d4ed8;color:#fff;font-size:13px;font-weight:900;cursor:pointer}
+    @media(max-width:560px){.wc-order-detail-overlay{padding:10px}.wc-order-detail-card{max-height:91dvh;border-radius:18px}.wc-order-detail-head{padding:17px 16px 14px;border-radius:18px 18px 0 0}.wc-order-detail-title{font-size:19px}.wc-order-detail-body{padding:10px;gap:10px}.wc-order-detail-section,.wc-order-detail-summary{padding:13px}.wc-order-detail-label{flex-basis:36%}.wc-order-detail-footer{padding:0 10px 10px}}
+
     .wc-hidden{display:none!important}
     .wc-success-overlay{position:fixed;inset:0;z-index:1300;background:#0f172a99;display:flex;align-items:center;justify-content:center;padding:32px 18px;overflow:auto}
     .wc-success-box{width:min(100%,390px);background:#fff;border-radius:18px;padding:26px 20px;margin:24px auto;box-shadow:0 18px 50px #0003;text-align:center}
@@ -1413,6 +1445,22 @@
         </div>
       </div>
     </div>
+
+
+  <!-- POPUP DETAIL PESANAN -->
+  <div class="wc-order-detail-overlay" id="wcOrderDetailModal" aria-hidden="true">
+    <div class="wc-order-detail-card" role="dialog" aria-modal="true" aria-labelledby="wcOrderDetailTitle">
+      <div class="wc-order-detail-head">
+        <div class="wc-order-detail-head-top">
+          <div><div class="wc-order-detail-brand">ALIFLAM PRINTING</div><h3 class="wc-order-detail-title" id="wcOrderDetailTitle">Detail Pesanan</h3><div class="wc-order-detail-number" id="wcOrderDetailNumber"></div></div>
+          <button type="button" class="wc-order-detail-close" id="wcOrderDetailClose" aria-label="Tutup detail pesanan">×</button>
+        </div>
+        <div class="wc-order-detail-statuses"><span class="wc-order-detail-pill" id="wcOrderStatus"></span><span class="wc-order-detail-pill pay" id="wcPaymentStatus"></span></div>
+      </div>
+      <div class="wc-order-detail-body" id="wcOrderDetailBody"></div>
+      <div class="wc-order-detail-footer"><button type="button" class="wc-order-detail-done" id="wcOrderDetailDone">TUTUP DETAIL</button></div>
+    </div>
+  </div>
 
   <!-- POPUP NOTIFIKASI ALIFLAM -->
   <div class="aliflam-alert-overlay" id="aliflamAlert" aria-hidden="true">
@@ -3310,43 +3358,33 @@
         let accessTokens={};try{accessTokens=JSON.parse(localStorage.getItem('aliflam_order_access_tokens')||'{}')}catch(e){};for(const id of ids){const card=document.createElement('div');card.className='wc-card';card.innerHTML='<div class="wc-line"><strong>'+id+'</strong><span class="wc-status-badge">MEMUAT...</span></div>';root.appendChild(card);try{const d=await postCheckout({action:'getOrderDetail',orderId:id,accessToken:accessTokens[id]||''});if(d.success){card.innerHTML='<div class="wc-line"><strong>'+d.order.nomorPesanan+'</strong><span class="wc-status-badge">'+d.order.statusPesanan+'</span></div><div class="wc-muted">'+(d.order.tanggal||'')+'</div><div class="wc-line"><span>Total</span><b>'+money(d.order.total)+'</b></div><div class="wc-line"><span>Pembayaran</span><b>'+d.order.statusPembayaran+'</b></div><button class="wc-btn light" type="button">DETAIL PESANAN</button>';card.querySelector('button').onclick=()=>showOrderDetailLocal(d);}}catch(e){card.querySelector('.wc-status-badge').textContent='GAGAL MEMUAT';}}
       }
       function showOrderDetailLocal(d){
-        const order=d.order||{};
-        const address=d.address||{};
-        const payment=d.payment||{};
+        const order=d.order||{}, address=d.address||{}, payment=d.payment||{};
         const items=Array.isArray(d.items)?d.items:[];
-        const lines=[];
-        lines.push('DETAIL PESANAN');
-        lines.push('Nomor pesanan: '+(order.nomorPesanan||order.orderId||'-'));
-        lines.push('Tanggal: '+(order.tanggal||'-'));
-        lines.push('Status pesanan: '+(order.statusPesanan||'-'));
-        lines.push('Status pembayaran: '+(order.statusPembayaran||payment.status||'-'));
-        lines.push('');
-        lines.push('PRODUK ('+items.length+' item)');
-        if(items.length){items.forEach((item,i)=>{
-          lines.push((i+1)+'. '+(item.namaProduk||item.kodeProduk||'Produk'));
+        const modal=document.getElementById('wcOrderDetailModal');
+        const body=document.getElementById('wcOrderDetailBody');
+        const esc=v=>String(v===null||v===undefined||v===''?'-':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const row=(label,value,extra='')=>'<div class="wc-order-detail-row"><span class="wc-order-detail-label">'+esc(label)+'</span><span class="wc-order-detail-value '+extra+'">'+esc(value)+'</span></div>';
+        document.getElementById('wcOrderDetailNumber').textContent='Nomor pesanan: '+(order.nomorPesanan||order.orderId||'-');
+        document.getElementById('wcOrderStatus').textContent='PESANAN: '+(order.statusPesanan||'-');
+        document.getElementById('wcPaymentStatus').textContent='PEMBAYARAN: '+(order.statusPembayaran||payment.status||'-');
+        const productHtml=items.length?items.map((item,i)=>{
           const variant=[item.variasi1,item.variasi2].filter(v=>String(v||'').trim()).join(' / ');
-          if(variant)lines.push('   Variasi: '+variant);
-          if(item.ukuran)lines.push('   Ukuran: '+item.ukuran);
-          lines.push('   Jumlah: '+(item.qty||0)+' | Harga: '+money(item.hargaSatuan)+' | Total: '+money(item.totalItem));
-          if(item.catatanDesain)lines.push('   Catatan desain: '+item.catatanDesain);
-        });}else{lines.push('Rincian produk belum tersedia.');}
-        lines.push('');
-        lines.push('ALAMAT PENGIRIMAN');
-        lines.push('Penerima: '+(address.namaPenerima||'-'));
-        lines.push('WhatsApp: '+(address.noWaPenerima||'-'));
-        lines.push('Alamat: '+[address.alamatLengkap,address.kelurahan,address.kecamatan,address.kota,address.provinsi,address.kodePos].filter(v=>String(v||'').trim()).join(', '));
-        lines.push('Wilayah ongkir: '+(address.wilayahOngkir||'-'));
-        lines.push('Ongkir: '+money(address.biayaOngkir));
-        lines.push('');
-        lines.push('PEMBAYARAN');
-        lines.push('Metode: '+(payment.metodePembayaran||'-'));
-        lines.push('Jumlah: '+money(payment.jumlah||order.total));
-        lines.push('Status: '+(payment.status||order.statusPembayaran||'-'));
-        lines.push('');
-        lines.push('Subtotal: '+money(order.subtotal));
-        lines.push('Total pesanan: '+money(order.total));
-        aliflamAlert(lines.join('\n'),null,'info');
+          return '<div class="wc-order-product"><div class="wc-order-product-name">'+(i+1)+'. '+esc(item.namaProduk||item.kodeProduk||'Produk')+'</div><div class="wc-order-product-meta">'+(variant?'<div>Variasi: '+esc(variant)+'</div>':'')+(item.ukuran?'<div>Ukuran: '+esc(item.ukuran)+'</div>':'')+'<div>Jumlah: '+esc(item.qty||0)+'</div>'+(item.catatanDesain?'<div>Catatan desain: '+esc(item.catatanDesain)+'</div>':'')+'</div><div class="wc-order-product-total"><span>'+esc(money(item.hargaSatuan))+' / unit</span><span>'+esc(money(item.totalItem))+'</span></div></div>';
+        }).join(''):'<div class="wc-order-detail-value">Rincian produk belum tersedia.</div>';
+        const fullAddress=[address.alamatLengkap,address.kelurahan,address.kecamatan,address.kota,address.provinsi,address.kodePos].filter(v=>String(v||'').trim()).join(', ')||'-';
+        body.innerHTML=
+          '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Informasi pesanan</h4>'+row('Tanggal',order.tanggal||'-')+row('Nomor pesanan',order.nomorPesanan||order.orderId||'-')+'</section>'+
+          '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Rincian produk ('+items.length+' item)</h4>'+productHtml+'</section>'+
+          '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Alamat pengiriman</h4>'+row('Nama penerima',address.namaPenerima||'-')+row('WhatsApp',address.noWaPenerima||'-')+row('Alamat lengkap',fullAddress)+row('Wilayah pengiriman',address.wilayahOngkir||'-')+row('Ongkos kirim',money(address.biayaOngkir))+'</section>'+
+          '<section class="wc-order-detail-section"><h4 class="wc-order-detail-section-title">Pembayaran</h4>'+row('Metode pembayaran',payment.metodePembayaran||'-')+row('Jumlah pembayaran',money(payment.jumlah||order.total))+row('Status pembayaran',payment.status||order.statusPembayaran||'-')+'</section>'+
+          '<section class="wc-order-detail-summary"><h4 class="wc-order-detail-section-title">Ringkasan biaya</h4>'+row('Subtotal produk',money(order.subtotal))+row('Ongkos kirim',money(address.biayaOngkir))+row('TOTAL PESANAN',money(order.total),'wc-order-detail-grand')+'</section>';
+        modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+        document.getElementById('wcOrderDetailClose').focus();
       }
+      function closeOrderDetail(){const modal=document.getElementById('wcOrderDetailModal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+      document.getElementById('wcOrderDetailClose').addEventListener('click',closeOrderDetail);
+      document.getElementById('wcOrderDetailDone').addEventListener('click',closeOrderDetail);
+      document.getElementById('wcOrderDetailModal').addEventListener('click',e=>{if(e.target.id==='wcOrderDetailModal')closeOrderDetail();});
 
       // Ganti handler tombol lama dengan handler checkout 7 step.
       ['wcCartFloat','wcClose','wcStep1Next','wcStep2Back','wcStep2Next','wcStep3Back','wcStep3Next','wcStep4Back','wcStep4Next','wcStep5Back','wcCreateOrder','wcConfirmWa','wcStep6Done','wcSuccessWa','wcSuccessOrders','wcSuccessClose'].forEach(id=>{const el=$(id);if(!el)return;const clone=el.cloneNode(true);el.replaceWith(clone);});
