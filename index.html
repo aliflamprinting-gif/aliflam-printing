@@ -1048,6 +1048,14 @@
     .wc-order-product-name{font-size:14px;font-weight:900;color:#172033;line-height:1.4;margin-bottom:5px}
     .wc-order-product-meta{font-size:12px;line-height:1.65;color:#64748b;overflow-wrap:anywhere}
     .wc-order-product-total{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-top:7px;color:#334155;font-weight:800}
+    /* Ringkasan produk pada kartu daftar Pesanan Saya; popup detail tetap terpisah. */
+    .my-order-items{margin:10px 0 8px;padding:12px;border:1px solid #e2e8f0;border-radius:13px;background:#fff}
+    .my-order-items-title{margin:0 0 9px;color:#64748b;font-size:11px;font-weight:900;letter-spacing:.35px;text-transform:uppercase}
+    .my-order-product{padding:9px 0;border-bottom:1px solid #edf0f5}
+    .my-order-product:first-of-type{padding-top:0}.my-order-product:last-child{padding-bottom:0;border-bottom:0}
+    .my-order-product-name{font-size:13px;line-height:1.4;font-weight:900;color:#172033;margin-bottom:4px}
+    .my-order-product-meta{font-size:11px;line-height:1.55;color:#64748b;overflow-wrap:anywhere}
+    .my-order-product-total{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:12px;font-weight:900;color:#172033}
     .wc-order-detail-summary{background:#eff6ff;border:1px solid #bfdbfe;border-radius:16px;padding:15px}
     .wc-order-detail-summary .wc-order-detail-row{border-color:#dbeafe}
     .wc-order-detail-grand{font-size:17px!important;color:#1d4ed8!important;font-weight:950!important}
@@ -3385,8 +3393,29 @@
         return new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date).replace(/\./g,':').replace(/,/, ',');
       }
       async function renderMyOrders(){
-        const root=$('myOrdersList'); if(!root)return; let ids=[];try{ids=JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY)||'[]')}catch(e){};root.innerHTML='';if(!ids.length){root.innerHTML='<div class="wc-card"><strong>Belum ada pesanan</strong><p class="wc-muted">Pesanan yang berhasil dibuat di perangkat ini akan muncul di sini.</p></div>';return;}
-        let accessTokens={};try{accessTokens=JSON.parse(localStorage.getItem('aliflam_order_access_tokens')||'{}')}catch(e){};for(const id of ids){const card=document.createElement('div');card.className='wc-card';card.innerHTML='<div class="wc-line"><strong>'+id+'</strong><span class="wc-status-badge">MEMUAT...</span></div>';root.appendChild(card);try{const d=await postCheckout({action:'getOrderDetail',orderId:id,accessToken:accessTokens[id]||''});if(d.success){card.innerHTML='<div class="wc-line"><strong>'+d.order.nomorPesanan+'</strong><span class="wc-status-badge">'+d.order.statusPesanan+'</span></div><div class="wc-muted">'+(d.order.tanggal||'')+'</div><div class="wc-line"><span>Total</span><b>'+money(d.order.total)+'</b></div><div class="wc-line"><span>Pembayaran</span><b>'+d.order.statusPembayaran+'</b></div><button class="wc-btn light" type="button">DETAIL PESANAN</button>';card.querySelector('button').onclick=()=>showOrderDetailLocal(d);}}catch(e){card.querySelector('.wc-status-badge').textContent='GAGAL MEMUAT';}}
+        const root=$('myOrdersList'); if(!root)return;
+        let ids=[];try{ids=JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY)||'[]')}catch(e){}
+        root.innerHTML='';
+        if(!ids.length){root.innerHTML='<div class="wc-card"><strong>Belum ada pesanan</strong><p class="wc-muted">Pesanan yang berhasil dibuat di perangkat ini akan muncul di sini.</p></div>';return;}
+        let accessTokens={};try{accessTokens=JSON.parse(localStorage.getItem('aliflam_order_access_tokens')||'{}')}catch(e){}
+        const escOrder=v=>String(v===null||v===undefined||v===''?'-':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        for(const id of ids){
+          const card=document.createElement('div');card.className='wc-card';
+          card.innerHTML='<div class="wc-line"><strong>'+escOrder(id)+'</strong><span class="wc-status-badge">MEMUAT...</span></div>';
+          root.appendChild(card);
+          try{
+            const d=await postCheckout({action:'getOrderDetail',orderId:id,accessToken:accessTokens[id]||''});
+            if(d.success){
+              const order=d.order||{}, items=Array.isArray(d.items)?d.items:[];
+              const productsHtml=items.length?'<div class="my-order-items"><div class="my-order-items-title">Rincian produk ('+items.length+' item)</div>'+items.map((item,i)=>{
+                const variant=[item.variasi1,item.variasi2].filter(v=>String(v||'').trim()).join(' / ');
+                return '<div class="my-order-product"><div class="my-order-product-name">'+(i+1)+'. '+escOrder(item.namaProduk||item.kodeProduk||'Produk')+'</div><div class="my-order-product-meta">'+(variant?'<div>Variasi: '+escOrder(variant)+'</div>':'')+(item.ukuran?'<div>Ukuran: '+escOrder(item.ukuran)+'</div>':'')+'<div>Jumlah: '+escOrder(item.qty||0)+'</div>'+(item.catatanDesain?'<div>Catatan desain: '+escOrder(item.catatanDesain)+'</div>':'')+'</div><div class="my-order-product-total"><span>'+escOrder(money(item.hargaSatuan))+' / unit</span><span>'+escOrder(money(item.totalItem))+'</span></div></div>';
+              }).join('')+'</div>':'<div class="my-order-items"><div class="my-order-items-title">Rincian produk</div><div class="wc-muted">Rincian produk belum tersedia.</div></div>';
+              card.innerHTML='<div class="wc-line"><strong>'+escOrder(order.nomorPesanan||id)+'</strong><span class="wc-status-badge">'+escOrder(order.statusPesanan||'-')+'</span></div><div class="wc-muted">'+escOrder(formatOrderDateWIB(order.tanggal))+'</div>'+productsHtml+'<div class="wc-line"><span>Total</span><b>'+escOrder(money(order.total))+'</b></div><div class="wc-line"><span>Pembayaran</span><b>'+escOrder(order.statusPembayaran||'-')+'</b></div><button class="wc-btn light" type="button">DETAIL PESANAN</button>';
+              card.querySelector('button').onclick=()=>showOrderDetailLocal(d);
+            }
+          }catch(e){const badge=card.querySelector('.wc-status-badge');if(badge)badge.textContent='GAGAL MEMUAT';}
+        }
       }
       function getSelectedText(id){
         const el=document.getElementById(id);
